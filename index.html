@@ -7,7 +7,7 @@
 
 <title>MSB ERP TRACKING FABRIKASI</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -22,7 +22,6 @@ box-sizing:border-box;
 font-family:'Poppins',sans-serif;
 }
 
-/* --- LATAR BELAKANG MEWAH & FUTURISTIK --- */
 body {
 background: linear-gradient(-45deg, #0f172a, #2e0854, #102a6b, #5c330c, #0f172a);
 background-size: 400% 400%;
@@ -46,17 +45,18 @@ left:0;
 z-index:-1;
 }
 
-/* --- GLOWING CURSOR AURA --- */
+/* --- OPTIMASI: GLOWING CURSOR --- */
 #cursor-glow {
 position: fixed;
+top: 0; left: 0;
 width: 40vw;
 height: 40vw;
 border-radius: 50%;
-background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(30, 58, 138, 0.05) 40%, transparent 70%);
+background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, rgba(30, 58, 138, 0.05) 40%, transparent 70%);
 pointer-events: none;
-transform: translate(-50%, -50%);
 z-index: -2;
-transition: width 0.3s, height 0.3s;
+will-change: transform; /* Memberi tahu browser untuk menyiapkan GPU */
+transform: translate3d(-50%, -50%, 0); 
 }
 
 .topbar{
@@ -65,8 +65,8 @@ justify-content:space-between;
 align-items:center;
 padding:20px 40px;
 background: rgba(255, 255, 255, 0.85);
-backdrop-filter:blur(20px);
--webkit-backdrop-filter:blur(20px);
+backdrop-filter:blur(10px); /* OPTIMASI: Mengurangi intensitas blur */
+-webkit-backdrop-filter:blur(10px);
 border-bottom: 3px solid #d4af37;
 box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
 }
@@ -105,7 +105,7 @@ background: rgba(255, 255, 255, 0.85);
 padding: 20px;
 border-radius: 24px;
 border: 1px solid rgba(255, 255, 255, 0.5);
-backdrop-filter:blur(15px);
+backdrop-filter:blur(10px);
 box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
@@ -119,7 +119,7 @@ color: #1e3a8a;
 font-size: 13px;
 font-weight: 500;
 outline: none;
-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .controls input::placeholder {
@@ -139,7 +139,7 @@ border-color: #1e3a8a;
 box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
 }
 
-/* --- UPDATE: DESAIN BUTTON ELEGAN & FUTURISTIK --- */
+/* BUTTON ELEGAN & FUTURISTIK */
 .controls button{
 padding:14px 16px;
 border-radius:16px;
@@ -153,17 +153,17 @@ border: 1px solid rgba(255, 255, 255, 0.1);
 box-shadow: 0 4px 15px rgba(30, 58, 138, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2);
 text-transform: uppercase;
 letter-spacing: 0.8px;
-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .controls button:hover{
-transform: translateY(-4px);
+transform: translateY(-3px);
 background-position: right center;
-box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5), 0 0 15px rgba(56, 189, 248, 0.4);
+box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4), 0 0 15px rgba(56, 189, 248, 0.3);
 border-color: rgba(56, 189, 248, 0.5);
 }
 
-/* --- UPDATE: BUTTON EMAS MEWAH --- */
+/* BUTTON EMAS MEWAH */
 .controls button.btn-gold {
 background: linear-gradient(135deg, #5c4308 0%, #aa7c11 40%, #d4af37 70%, #f3e5ab 100%);
 background-size: 200% auto;
@@ -174,9 +174,9 @@ border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 .controls button.btn-gold:hover {
-transform: translateY(-4px);
+transform: translateY(-3px);
 background-position: right center;
-box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6), 0 0 15px rgba(255, 224, 102, 0.4);
+box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5), 0 0 15px rgba(255, 224, 102, 0.3);
 border-color: rgba(255, 224, 102, 0.6);
 }
 
@@ -190,18 +190,17 @@ margin-bottom:30px;
 .chart-box{
 padding:25px;
 border-radius:24px;
-background: rgba(255, 255, 255, 0.9);
-backdrop-filter:blur(20px);
--webkit-backdrop-filter:blur(20px);
+background: rgba(255, 255, 255, 0.95); /* Sedikit lebih solid agar blur tak terlalu membebani */
+backdrop-filter:blur(10px);
 border: 1px solid rgba(255, 255, 255, 0.7);
-box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-transition: all 0.4s ease;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+transition: all 0.3s ease;
 }
 
 .chart-box:hover {
-transform: translateY(-5px);
+transform: translateY(-4px);
 border-color: rgba(212, 175, 55, 0.6);
-box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15);
 }
 
 .cards{
@@ -214,13 +213,13 @@ margin-bottom:30px;
 .card{
 padding:25px;
 border-radius:24px;
-background: rgba(255, 255, 255, 0.9);
-backdrop-filter:blur(15px);
+background: rgba(255, 255, 255, 0.95);
+backdrop-filter:blur(10px);
 border: 1px solid rgba(255, 255, 255, 0.5);
-box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 position: relative;
 overflow: hidden;
-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card::before {
@@ -234,9 +233,9 @@ background: linear-gradient(90deg, #1e3a8a, #d4af37, #2563eb);
 }
 
 .card:hover{
-transform:translateY(-8px) scale(1.02);
+transform:translateY(-6px) scale(1.02);
 border-color: rgba(212, 175, 55, 0.5);
-box-shadow: 0 15px 35px rgba(212, 175, 55, 0.25);
+box-shadow: 0 12px 30px rgba(212, 175, 55, 0.2);
 }
 
 .card h3{
@@ -276,9 +275,9 @@ overflow:auto;
 max-height: 500px; 
 border-radius:24px 24px 0 0;
 background: rgba(255, 255, 255, 0.95);
-backdrop-filter:blur(25px);
+backdrop-filter:blur(10px);
 border: 1px solid rgba(255, 255, 255, 0.7);
-box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 table{
@@ -288,10 +287,10 @@ border-spacing: 0;
 min-width:1800px;
 }
 
-/* --- UPDATE: HEADER TABEL GRADASI SANGAT MEWAH & UNIK --- */
+/* HEADER TABEL GRADASI MEWAH */
 th{
 background: linear-gradient(135deg, #2b0b57 0%, #151f42 40%, #0d1e4a 70%, #1e3a8a 100%);
-color: #f5df84; /* Warna Champagne Gold Meredup */
+color: #f5df84; 
 padding:18px 16px;
 font-size:12px;
 font-weight: 700;
@@ -318,14 +317,14 @@ text-align:center;
 font-size:12px;
 font-weight: 500;
 transition: all 0.2s;
-background: rgba(255, 255, 255, 0.3);
+background: rgba(255, 255, 255, 0.5); /* OPTIMASI: alpha background solid sedikit ditingkatkan */
 }
 
 tr:last-child td {
 border-bottom: none;
 }
 
-/* --- UPDATE: EFEK HOVER BARIS TABEL EMAS ELEGAN --- */
+/* EFEK HOVER BARIS TABEL EMAS */
 tr:hover td{
 background: rgba(212, 175, 55, 0.08);
 color: #0f172a;
@@ -340,11 +339,6 @@ font-weight:700;
 display: inline-block;
 letter-spacing: 0.5px;
 box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-transition: transform 0.2s;
-}
-
-.status:hover {
-transform: scale(1.1);
 }
 
 .done{
@@ -427,10 +421,10 @@ z-index:999;
 width:400px;
 padding:45px;
 border-radius:32px;
-background: rgba(255, 255, 255, 0.9);
-backdrop-filter: blur(20px);
+background: rgba(255, 255, 255, 0.95);
+backdrop-filter: blur(10px);
 border: 1px solid rgba(212, 175, 55, 0.5);
-box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 text-align: center;
 }
 
@@ -475,29 +469,18 @@ font-size: 14px;
 letter-spacing: 1px;
 cursor:pointer;
 box-shadow: 0 4px 20px rgba(30, 58, 138, 0.3);
-transition: all 0.3s;
+transition: all 0.2s;
 }
 
 .login-box button:hover {
-transform: translateY(-3px);
-box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
 }
 
-.table-box::-webkit-scrollbar {
-width: 10px;
-height: 10px;
-}
-.table-box::-webkit-scrollbar-track {
-background: rgba(255, 255, 255, 0.1);
-border-radius: 10px;
-}
-.table-box::-webkit-scrollbar-thumb {
-background: rgba(30, 58, 138, 0.4);
-border-radius: 10px;
-}
-.table-box::-webkit-scrollbar-thumb:hover {
-background: rgba(212, 175, 55, 0.8);
-}
+.table-box::-webkit-scrollbar { width: 10px; height: 10px; }
+.table-box::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+.table-box::-webkit-scrollbar-thumb { background: rgba(30, 58, 138, 0.4); border-radius: 10px; }
+.table-box::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); }
 
 </style>
 
@@ -510,44 +493,29 @@ background: rgba(212, 175, 55, 0.8);
 <canvas id="bg"></canvas>
 
 <div class="login" id="loginPage">
-
 <div class="login-box">
-
 <h1>MSB TRACKING</h1>
-
 <input type="text" id="username" placeholder="Username">
 <input type="password" id="password" placeholder="Password">
-
 <button onclick="login()">ENTER SYSTEM</button>
-
 </div>
-
 </div>
 
 <div class="topbar">
-
-<div class="logo">
-MSB PRODUCTION TRACKING SYSTEM
-</div>
-
+<div class="logo">MSB PRODUCTION TRACKING SYSTEM</div>
 <div class="clock" id="clock"></div>
-
 </div>
 
 <div class="container">
 
 <div class="controls">
-
 <input type="text" id="search" placeholder="Search PO, Unit, or Serial..." onkeyup="renderTable()">
-
 <select id="clientFilter" onchange="onClientFilterChange()">
 <option value="">All Client</option>
 </select>
-
 <select id="unitFilter" onchange="renderTable()">
 <option value="">All Unit</option>
 </select>
-
 <select id="periodeFilter" onchange="renderTable()">
 <option value="">All Periode</option>
 <option value="Januari">Januari</option>
@@ -563,114 +531,60 @@ MSB PRODUCTION TRACKING SYSTEM
 <option value="November">November</option>
 <option value="Desember">Desember</option>
 </select>
-
 <select id="statusFilter" onchange="renderTable()">
 <option value="">All Status (Delivery)</option>
 <option value="DONE">DONE</option>
 <option value="PROCESS">PROCESS</option>
 <option value="PENDING">PENDING</option>
 </select>
-
 <button onclick="loadData()">Refresh</button>
 <button class="btn-gold" onclick="window.print()">Print</button>
 <button onclick="exportExcel()">Excel</button>
 <button class="btn-gold" onclick="exportPDF()">PDF</button>
-
 </div>
 
 <div class="chart-grid">
-
-<div class="chart-box">
-<canvas id="chart1"></canvas>
-</div>
-
-<div class="chart-box">
-<canvas id="chart2"></canvas>
-</div>
-
-<div class="chart-box">
-<canvas id="chart3"></canvas>
-</div>
-
+<div class="chart-box"><canvas id="chart1"></canvas></div>
+<div class="chart-box"><canvas id="chart2"></canvas></div>
+<div class="chart-box"><canvas id="chart3"></canvas></div>
 </div>
 
 <div class="cards">
-
 <div class="card">
-<h3>Total PO</h3>
-<h1 id="poCount">0</h1>
-<div class="progress-bar">
-<div class="progress-fill" style="width:92%"></div>
+<h3>Total PO</h3><h1 id="poCount">0</h1>
+<div class="progress-bar"><div class="progress-fill" style="width:92%"></div></div>
 </div>
-</div>
-
-<div class="card">
-<h3>Total Stock</h3>
-<h1 id="stockCount">0</h1>
-</div>
-
-<div class="card">
-<h3>Total Client</h3>
-<h1 id="clientCount">0</h1>
-</div>
-
-<div class="card">
-<h3>Total Delivery</h3>
-<h1 id="deliveryCount">0</h1>
-</div>
-
-<div class="card">
-<h3>Efficiency Rate</h3>
-<h1>97.4%</h1>
-</div>
-
+<div class="card"><h3>Total Stock</h3><h1 id="stockCount">0</h1></div>
+<div class="card"><h3>Total Client</h3><h1 id="clientCount">0</h1></div>
+<div class="card"><h3>Total Delivery</h3><h1 id="deliveryCount">0</h1></div>
+<div class="card"><h3>Efficiency Rate</h3><h1>97.4%</h1></div>
 </div>
 
 <div class="table-box">
-
 <table id="table">
-
 <thead>
-
 <tr>
-
-<th>PO Number</th>
-<th>Unit</th>
-<th>Periode</th>
-<th>Serial Number</th>
-<th>Assembling</th>
-<th>Welding</th>
-<th>Leak Test</th>
-<th>Filling</th>
-<th>Alignment</th>
-<th>Covering</th>
-<th>Painting</th>
-<th>Schedule</th>
-<th>Delivery</th>
-
+<th>PO Number</th><th>Unit</th><th>Periode</th><th>Serial Number</th>
+<th>Assembling</th><th>Welding</th><th>Leak Test</th><th>Filling</th>
+<th>Alignment</th><th>Covering</th><th>Painting</th><th>Schedule</th><th>Delivery</th>
 </tr>
-
 </thead>
-
 <tbody></tbody>
-
 </table>
-
 </div>
 
 <div class="table-info-bar">
-  <div id="filterCounter">Menampilkan <strong>0</strong> dari total <strong>0</strong> record data produksi.</div>
+  <div id="filterCounter">Menampilkan <strong>0</strong> dari total <strong>0</strong> record data.</div>
   <div>Plant Kalijati, Subang</div>
 </div>
 
 <div class="footer-license">
-  PT Murinda Sentra Baja © 2026 | <strong>ERP System Module</strong> — Production Tracking. All Rights Reserved.
+  PT Murinda Sentra Baja © 2026 | <strong>ERP System Module</strong> — Production Tracking.
 </div>
 
 </div>
 
 <script>
-
 const API="https://script.google.com/macros/s/AKfycbwQ-IdTpITanL6GPLJaTa5I3CXDF6nEu-dW5nmr9SmcnGjq_L_Uy5wGcLNaZt2b1AC6UA/exec";
 
 let data=[];
@@ -681,7 +595,6 @@ let myChart3 = null;
 function login(){
 const user=document.getElementById('username').value;
 const pass=document.getElementById('password').value;
-
 if(user==="Aspuro" && pass==="020109"){
 document.getElementById('loginPage').style.display='none';
 } else {
@@ -738,11 +651,9 @@ fillSelect('unitFilter', filteredUnits.filter(Boolean), currentUnit);
 function fillSelect(id, arr, selectedValue){
 const el=document.getElementById(id);
 el.innerHTML = el.options[0].outerHTML; 
-
 arr.forEach(v=>{
 let op=document.createElement('option');
-op.value=v;
-op.text=v;
+op.value=v; op.text=v;
 if(v === selectedValue) op.selected = true;
 el.appendChild(op);
 });
@@ -750,52 +661,34 @@ el.appendChild(op);
 
 function formatDate(dateStr) {
 if (!dateStr) return '-';
-if (typeof dateStr === 'string' && dateStr.length <= 12 && isNaN(Date.parse(dateStr))) {
-  return dateStr;
-}
-let date;
-if (String(dateStr).includes("Date(")) {
-  const timestamp = parseInt(String(dateStr).match(/\d+/)[0]);
-  date = new Date(timestamp);
-} else {
-  date = new Date(dateStr);
-}
+if (typeof dateStr === 'string' && dateStr.length <= 12 && isNaN(Date.parse(dateStr))) return dateStr;
+let date = String(dateStr).includes("Date(") ? new Date(parseInt(String(dateStr).match(/\d+/)[0])) : new Date(dateStr);
 if (isNaN(date.getTime())) return dateStr; 
-
 const day = String(date.getDate()).padStart(2, '0');
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const month = months[date.getMonth()];
-const year = String(date.getFullYear()).slice(-2);
-
-return `${day}-${month}-${year}`;
+return `${day}-${months[date.getMonth()]}-${String(date.getFullYear()).slice(-2)}`;
 }
 
 function parseCellContent(v) {
   if (!v) return '<span class="status pending">-</span>';
   let text = String(v).toUpperCase().trim();
-  
   if (text === 'DONE') return '<span class="status done">DONE</span>';
   if (text === 'PROCESS') return '<span class="status process">PROCESS</span>';
   if (text === 'PENDING') return '<span class="status pending">PENDING</span>';
-  
-  if ((text.includes('T') && text.includes('Z')) || !isNaN(Date.parse(v))) {
-    return `<span class="date-badge">${formatDate(v)}</span>`;
-  }
+  if ((text.includes('T') && text.includes('Z')) || !isNaN(Date.parse(v))) return `<span class="date-badge">${formatDate(v)}</span>`;
   return `<span class="status process">${v}</span>`;
 }
 
 function isDone(v) {
   if(!v) return false;
   let text = String(v).toUpperCase().trim();
-  if(text === 'DONE') return true;
-  if((text.includes('T') && text.includes('Z')) || !isNaN(Date.parse(v))) return true;
+  if(text === 'DONE' || (text.includes('T') && text.includes('Z')) || !isNaN(Date.parse(v))) return true;
   return false;
 }
 
 function renderCards(){
 const poRows = data.filter(x => x["PO Number"] && String(x["PO Number"]).trim() !== "");
 const stockRows = data.filter(x => (!x["PO Number"] || String(x["PO Number"]).trim() === "") && (x["Serial Number"] && String(x["Serial Number"]).trim() !== ""));
-
 document.getElementById('poCount').innerText = poRows.length;
 document.getElementById('stockCount').innerText = stockRows.length;
 document.getElementById('clientCount').innerText = [...new Set(data.map(x=>x.Client))].filter(Boolean).length;
@@ -804,8 +697,6 @@ document.getElementById('deliveryCount').innerText = data.filter(x => isDone(x.D
 
 function renderTable(){
 const tbody=document.querySelector('#table tbody');
-tbody.innerHTML='';
-
 const search=document.getElementById('search').value.toLowerCase();
 const client=document.getElementById('clientFilter').value;
 const unit=document.getElementById('unitFilter').value;
@@ -818,59 +709,43 @@ if(status === 'DONE') matchStatus = isDone(x.Delivery);
 else if(status === 'PROCESS') matchStatus = (String(x.Delivery).toUpperCase().trim() === 'PROCESS');
 else if(status === 'PENDING') matchStatus = (!x.Delivery || String(x.Delivery).toUpperCase().trim() === 'PENDING');
 
-return (!client || x.Client===client)
-&& (!unit || x.Unit===unit)
-&& (!periode || x.Periode===periode)
-&& matchStatus
-&& (
-(x["PO Number"] && String(x["PO Number"]).toLowerCase().includes(search))
+return (!client || x.Client===client) && (!unit || x.Unit===unit) && (!periode || x.Periode===periode) && matchStatus
+&& ((x["PO Number"] && String(x["PO Number"]).toLowerCase().includes(search))
 || (x.Unit && String(x.Unit).toLowerCase().includes(search))
-|| (x["Serial Number"] && String(x["Serial Number"]).toLowerCase().includes(search))
-);
+|| (x["Serial Number"] && String(x["Serial Number"]).toLowerCase().includes(search)));
 });
 
+// OPTIMASI: Memasukkan elemen ke array lalu join untuk mencegah reflow DOM massal
+let htmlRows = [];
 filtered.forEach(x=>{
 const isStockUnit = (!x["PO Number"] || String(x["PO Number"]).trim() === "");
-tbody.innerHTML+=`
-<tr>
+htmlRows.push(`<tr>
 <td>${isStockUnit ? '<em style="color:#aa7c11; font-weight:700; letter-spacing:0.5px;">STOCK</em>' : x["PO Number"]}</td>
-<td>${x.Unit || ''}</td>
-<td>${x.Periode || ''}</td>
-<td>${x["Serial Number"] || ''}</td>
-<td>${parseCellContent(x.Assembling)}</td>
-<td>${parseCellContent(x.Welding)}</td>
-<td>${parseCellContent(x.LeakTest || x["Leak Test"])}</td>
-<td>${parseCellContent(x.Filling)}</td>
-<td>${parseCellContent(x.Alignment)}</td>
-<td>${parseCellContent(x.Covering)}</td>
-<td>${parseCellContent(x.Painting)}</td>
-<td>${formatDate(x.Schedule)}</td>
-<td>${parseCellContent(x.Delivery)}</td>
-</tr>
-`;
+<td>${x.Unit || ''}</td><td>${x.Periode || ''}</td><td>${x["Serial Number"] || ''}</td>
+<td>${parseCellContent(x.Assembling)}</td><td>${parseCellContent(x.Welding)}</td>
+<td>${parseCellContent(x.LeakTest || x["Leak Test"])}</td><td>${parseCellContent(x.Filling)}</td>
+<td>${parseCellContent(x.Alignment)}</td><td>${parseCellContent(x.Covering)}</td>
+<td>${parseCellContent(x.Painting)}</td><td>${formatDate(x.Schedule)}</td>
+<td>${parseCellContent(x.Delivery)}</td></tr>`);
 });
 
-document.getElementById('filterCounter').innerHTML = 
-  `Menampilkan <strong>${filtered.length}</strong> baris data terfilter, dari total keseluruhan <strong>${data.length}</strong> baris database MSB.`;
+tbody.innerHTML = htmlRows.join('');
+document.getElementById('filterCounter').innerHTML = `Menampilkan <strong>${filtered.length}</strong> baris data terfilter, dari total <strong>${data.length}</strong> baris.`;
 }
 
 function renderCharts(){
-if(myChart1 !== null) myChart1.destroy();
-if(myChart2 !== null) myChart2.destroy();
-if(myChart3 !== null) myChart3.destroy();
+if(myChart1) myChart1.destroy();
+if(myChart2) myChart2.destroy();
+if(myChart3) myChart3.destroy();
 
 const themeBlue = '#1e3a8a';
 const themeGold = '#d4af37';
-
 const chartOptions = {
 responsive: true,
-plugins: {
-legend: { labels: { color: '#1e3a8a', font: { family: 'Poppins', weight: 600 } } }
-},
+plugins: { legend: { labels: { color: '#1e3a8a', font: { family: 'Poppins', weight: 600 } } } },
 scales: {
 x: { ticks: { color: '#64748b' }, grid: { display: false } },
-y: { ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } }
-}
+y: { ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } } }
 };
 
 myChart1 = new Chart(document.getElementById('chart1'),{
@@ -884,160 +759,99 @@ data.filter(x => isDone(x.Delivery)).length,
 data.filter(x => x.Delivery && String(x.Delivery).toUpperCase().trim() === 'PROCESS').length,
 data.filter(x => !x.Delivery || String(x.Delivery).toUpperCase().trim() === 'PENDING').length
 ],
-backgroundColor: [themeBlue, themeGold, '#94a3b8'],
-borderRadius: 8
+backgroundColor: [themeBlue, themeGold, '#94a3b8'], borderRadius: 8
 }]
-},
-options: chartOptions
-});
-
-const totalPOVal = data.filter(x => x["PO Number"] && String(x["PO Number"]).trim() !== "").length;
-const totalDeliveredVal = data.filter(x => isDone(x.Delivery)).length;
+}, options: chartOptions });
 
 myChart2 = new Chart(document.getElementById('chart2'),{
 type:'bar',
 data:{
-labels:['Total PO Issued', 'Total Delivered'],
+labels:['Total PO', 'Total Delivered'],
 datasets:[{
-label: 'PO vs Delivery Ratio',
-data: [totalPOVal, totalDeliveredVal],
-backgroundColor: [themeBlue, themeGold],
-borderRadius: 8,
-barThickness: 45
+label: 'PO vs Delivery',
+data: [data.filter(x => x["PO Number"] && String(x["PO Number"]).trim() !== "").length, data.filter(x => isDone(x.Delivery)).length],
+backgroundColor: [themeBlue, themeGold], borderRadius: 8, barThickness: 45
 }]
-},
-options: chartOptions
-});
+}, options: chartOptions });
 
 myChart3 = new Chart(document.getElementById('chart3'),{
 type:'line',
 data:{
 labels: ['ASSY', 'WELD', 'LEAK', 'FILL', 'ALIGN', 'COV', 'PAINT', 'DELIV'],
 datasets:[{
-label: 'Completed Output (All Processes)',
+label: 'Completed Output',
 data: [
-  data.filter(x => isDone(x.Assembling)).length,
-  data.filter(x => isDone(x.Welding)).length,
-  data.filter(x => isDone(x.LeakTest || x["Leak Test"])).length,
-  data.filter(x => isDone(x.Filling)).length,
-  data.filter(x => isDone(x.Alignment)).length,
-  data.filter(x => isDone(x.Covering)).length,
-  data.filter(x => isDone(x.Painting)).length,
-  data.filter(x => isDone(x.Delivery)).length
+  data.filter(x => isDone(x.Assembling)).length, data.filter(x => isDone(x.Welding)).length,
+  data.filter(x => isDone(x.LeakTest || x["Leak Test"])).length, data.filter(x => isDone(x.Filling)).length,
+  data.filter(x => isDone(x.Alignment)).length, data.filter(x => isDone(x.Covering)).length,
+  data.filter(x => isDone(x.Painting)).length, data.filter(x => isDone(x.Delivery)).length
 ],
-borderColor: themeBlue,
-backgroundColor: 'rgba(30, 58, 138, 0.1)',
-pointBackgroundColor: themeGold,
-pointBorderColor: themeBlue,
-pointRadius: 5,
-tension: 0.3,
-fill: true
+borderColor: themeBlue, backgroundColor: 'rgba(30, 58, 138, 0.1)', pointBackgroundColor: themeGold,
+pointBorderColor: themeBlue, pointRadius: 5, tension: 0.3, fill: true
 }]
-},
-options: chartOptions
-});
+}, options: chartOptions });
 }
 
-function exportExcel(){
-const table=document.getElementById('table');
-const wb=XLSX.utils.table_to_book(table);
-XLSX.writeFile(wb,'ERP_REPORT.xlsx');
-}
-
-function exportPDF(){
-window.print();
-}
-
-function clock(){
-const now=new Date();
-document.getElementById('clock').innerHTML=now.toLocaleString();
-}
+function exportExcel(){ XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById('table')),'ERP_REPORT.xlsx'); }
+function exportPDF(){ window.print(); }
+function clock(){ document.getElementById('clock').innerHTML=new Date().toLocaleString(); }
 
 setInterval(clock,1000);
 clock();
 loadData();
-setInterval(loadData,30000);
+setInterval(loadData, 30000);
 
-/* --- EFEK MOUSE AURA GLOW --- */
+/* --- OPTIMASI: EFEK MOUSE AURA GLOW --- */
 const cursorGlow = document.getElementById('cursor-glow');
-let mouse = { x: null, y: null, radius: 150 };
+let mouse = { x: null, y: null, radius: 120 };
 
+// Menggunakan transform3d agar diproses GPU (Hardware Acceleration)
 window.addEventListener('mousemove', (e) => {
-    cursorGlow.style.left = e.clientX + 'px';
-    cursorGlow.style.top = e.clientY + 'px';
+    cursorGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
     mouse.x = e.x;
     mouse.y = e.y;
 });
+window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
 
-window.addEventListener('mouseout', () => {
-    mouse.x = undefined;
-    mouse.y = undefined;
-});
-
-/* --- JARINGAN PARTIKEL (CONSTELLATION EFFECT) --- */
+/* --- OPTIMASI: JARINGAN PARTIKEL (CONSTELLATION EFFECT) --- */
 const canvas=document.getElementById('bg');
 const ctx=canvas.getContext('2d');
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
 
 let particles=[];
-for(let i=0; i<80; i++){
+// Mengurangi jumlah partikel dari 80 menjadi 40 agar loop (O(n^2)) tidak memberatkan CPU
+for(let i=0; i<40; i++){
     particles.push({
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height,
-        r: Math.random()*2 + 1,
-        dx: (Math.random()-0.5)*0.5,
-        dy: (Math.random()-0.5)*0.5
+        x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+        r: Math.random()*2 + 1, dx: (Math.random()-0.5)*0.5, dy: (Math.random()-0.5)*0.5
     });
 }
 
 function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    
     for(let i=0; i<particles.length; i++) {
         let p = particles[i];
-        
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-        ctx.fillStyle='rgba(255, 255, 255, 0.4)';
-        ctx.fill();
-        
-        p.x += p.dx;
-        p.y += p.dy;
-        
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle='rgba(255, 255, 255, 0.4)'; ctx.fill();
+        p.x += p.dx; p.y += p.dy;
         if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
         if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
 
-        // Tarikan magnetic (efek futuristik ke kursor)
         if (mouse.x != null && mouse.y != null) {
-            let dx = mouse.x - p.x;
-            let dy = mouse.y - p.y;
+            let dx = mouse.x - p.x; let dy = mouse.y - p.y;
             let distance = Math.sqrt(dx*dx + dy*dy);
             if (distance < mouse.radius) {
-                ctx.beginPath();
-                ctx.strokeStyle = `rgba(212, 175, 55, ${1 - distance/mouse.radius})`; // Gold lines
-                ctx.lineWidth = 1;
-                ctx.moveTo(p.x, p.y);
-                ctx.lineTo(mouse.x, mouse.y);
-                ctx.stroke();
-                
-                // Sedikit tarikan ke arah mouse
-                p.x += dx * 0.01;
-                p.y += dy * 0.01;
+                ctx.beginPath(); ctx.strokeStyle = `rgba(212, 175, 55, ${1 - distance/mouse.radius})`;
+                ctx.lineWidth = 1; ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+                p.x += dx * 0.015; p.y += dy * 0.015;
             }
         }
-        
-        // Garis koneksi antar partikel
-        for(let j=i; j<particles.length; j++) {
+        for(let j=i+1; j<particles.length; j++) {
             let p2 = particles[j];
             let dist = Math.sqrt((p.x - p2.x)**2 + (p.y - p2.y)**2);
-            if(dist < 100) {
-                ctx.beginPath();
-                ctx.strokeStyle = `rgba(255, 255, 255, ${0.2 - dist/500})`;
-                ctx.lineWidth = 0.5;
-                ctx.moveTo(p.x, p.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.stroke();
+            if(dist < 120) {
+                ctx.beginPath(); ctx.strokeStyle = `rgba(255, 255, 255, ${0.2 - dist/600})`;
+                ctx.lineWidth = 0.5; ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
             }
         }
     }
@@ -1045,12 +859,7 @@ function animate(){
 }
 animate();
 
-window.addEventListener('resize', () => {
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-});
-
+window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 </script>
-
 </body>
 </html>
