@@ -37,6 +37,176 @@ body {
     background-attachment: fixed;
 }
 
+/* ==========================================
+   SCREEN LOGIN OVERLAY
+   ========================================== */
+#login-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 99999; /* Pastikan berada di paling atas */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background-color: #ffffff;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+#login-overlay.hidden {
+    display: none;
+}
+
+.login-wrapper {
+    transform: scale(1);
+    transition: transform 0.3s ease;
+}
+@media (max-width: 768px) { .login-wrapper { transform: scale(0.8); } }
+@media (max-width: 500px) { .login-wrapper { transform: scale(0.55); } }
+
+.login-card {
+    position: relative;
+    width: 800px;
+    height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 50px;
+    background: transparent;
+    border-radius: 20px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.login-card .circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.login-card .circle::before {
+    content: '';
+    position: absolute;
+    width: 220px; 
+    height: 220px;
+    background: transparent;
+    border: 5px solid var(--clr);
+    box-shadow: 0 0 20px rgba(26, 79, 156, 0.3);
+    border-radius: 50%;
+    transition: 0.5s ease-in-out;
+}
+
+.login-card .circle .logo_img {
+    max-width: 180px;
+    z-index: 12;
+    transition: 0.4s ease-in-out;
+}
+
+.login-card:hover .circle::before {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: var(--clr);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    border: 0px solid transparent;
+}
+
+.login-card:hover .circle .logo_img {
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+.login-card .content {
+    position: relative;
+    z-index: 10;
+    max-width: 420px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50px);
+    transition: 0.5s ease-in-out;
+}
+
+.login-card:hover .content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition-delay: 0.3s;
+}
+
+.login-card .content h2 {
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1.1em;
+    margin-bottom: 12px;
+    white-space: nowrap;
+}
+
+.login-card .content p {
+    color: #fff;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    opacity: 0.95;
+    line-height: 1.6; 
+}
+
+.login-card .content p strong {
+    color: #cffafe; 
+}
+
+.login-card .content button {
+    display: inline-block;
+    padding: 10px 25px;
+    background: #0284c7; 
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: 0.3s ease;
+}
+
+.login-card .content button:hover {
+    transform: scale(1.05);
+    background: #0369a1;
+}
+
+.login-card .factory_img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 320px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 4px solid #fff; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 11;
+    transition: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+}
+
+.login-card:hover .factory_img {
+    top: 50%;
+    left: 75%;
+    transform: translate(-50%, -50%) scale(1);
+    transition-delay: 0.2s;
+}
+
+/* ==========================================
+   MAIN DASHBOARD STYLES
+   ========================================== */
 .cursor-glow {
     position: fixed;
     top: 0; left: 0;
@@ -237,71 +407,16 @@ td:first-child { font-weight: 800; color: #0284c7; letter-spacing: 1px;}
     backdrop-filter: blur(20px);
 }
 
-.login {
-    position: fixed; inset: 0; 
-    background: var(--bg-gradient);
-    display: flex; justify-content: center; align-items: center; z-index: 999;
-    transition: opacity 0.8s ease;
-}
-
-.login::before {
-    content: ''; position: absolute; width: 800px; height: 800px;
-    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 60%);
-    top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0;
-}
-
-.login-box {
-    width: 450px; padding: 60px 40px; border-radius: 30px;
-    background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(30px);
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 20px 60px rgba(56, 189, 248, 0.2), inset 0 0 30px rgba(255,255,255,0.5);
-    text-align: center; position: relative; z-index: 1;
-}
-
-.login-box h1 { 
-    font-size: 36px; font-weight: 800; letter-spacing: 3px; margin-bottom: 5px; 
-    background: linear-gradient(to right, #0284c7, #0d9488);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.login-box p { color: #0ea5e9; font-size: 13px; font-weight: 700; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2.5px; }
-
-.login-box input {
-    width: 100%; padding: 18px 20px; margin-bottom: 20px;
-    border: 2px solid #fff; border-radius: 15px;
-    background: rgba(255, 255, 255, 0.6); color: #0284c7; outline: none; font-size: 15px; font-weight: 600; letter-spacing: 1px;
-    transition: all 0.3s;
-}
-.login-box input:focus { 
-    border-color: #38bdf8; background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); 
-}
-.login-box input::placeholder{ color: #7dd3fc; }
-
-.login-box button {
-    width: 100%; padding: 18px; border: none; border-radius: 15px;
-    background: linear-gradient(135deg, #38bdf8, #34d399);
-    color: #fff; font-weight: 800; font-size: 15px; letter-spacing: 2px;
-    cursor: pointer; transition: all 0.3s; margin-top: 15px;
-    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.4);
-}
-.login-box button:hover { 
-    transform: translateY(-3px) scale(1.02); 
-    box-shadow: 0 15px 35px rgba(52, 211, 153, 0.5); 
-    background: linear-gradient(135deg, #0ea5e9, #10b981);
-}
-
 /* =========================================================
    AI BOLA CAHAYA MEWAH (ORB)
-   Tanpa Ikon, Lebih Kecil, Bersinar, dan Berputar
    ========================================================= */
 .ai-fab {
     position: fixed; 
     bottom: 40px; 
     right: 40px; 
-    width: 45px; /* Ukuran diperkecil agar tidak menghalangi */
+    width: 45px; 
     height: 45px; 
     border-radius: 50%;
-    /* Gradasi yang membentuk seperti energi bercahaya di tengah */
     background: radial-gradient(circle at 35% 35%, #ffffff 0%, #7dd3fc 40%, #0284c7 100%);
     border: none;
     display: flex; 
@@ -310,15 +425,13 @@ td:first-child { font-weight: 800; color: #0284c7; letter-spacing: 1px;}
     cursor: pointer; 
     z-index: 100; 
     transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    /* Animasi pernapasan cahaya dari bola inti */
     animation: pulse-glow 2s infinite alternate;
 }
 
-/* Efek cincin cahaya berputar yang mewah (Outer Orbit) */
 .ai-fab::after {
     content: '';
     position: absolute;
-    width: 60px; /* Sedikit lebih besar dari bola inti */
+    width: 60px; 
     height: 60px;
     border-radius: 50%;
     border: 2px solid transparent;
@@ -329,7 +442,6 @@ td:first-child { font-weight: 800; color: #0284c7; letter-spacing: 1px;}
     filter: drop-shadow(0 0 5px #38bdf8);
 }
 
-/* Efek titik cahaya berputar berlawanan (Inner Orbit) */
 .ai-fab::before {
     content: '';
     position: absolute;
@@ -341,30 +453,19 @@ td:first-child { font-weight: 800; color: #0284c7; letter-spacing: 1px;}
     pointer-events: none;
 }
 
-/* Saat bola cahaya di-hover, energi dan putaran meningkat */
-.ai-fab:hover { 
-    transform: scale(1.15); 
-}
+.ai-fab:hover { transform: scale(1.15); }
 .ai-fab:hover::after {
     animation: orb-spin 0.6s linear infinite;
     border-top: 2px solid #ffffff;
     border-right: 2px solid #a7f3d0;
 }
 
-/* Kumpulan Keyframes untuk Cahaya & Rotasi */
-@keyframes orb-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-@keyframes orb-spin-reverse {
-    0% { transform: rotate(360deg); }
-    100% { transform: rotate(0deg); }
-}
+@keyframes orb-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes orb-spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
 @keyframes pulse-glow {
     0% { box-shadow: 0 0 10px rgba(2, 132, 199, 0.6), inset -3px -3px 10px rgba(0,0,0,0.1); }
     100% { box-shadow: 0 0 25px rgba(56, 189, 248, 1), 0 0 10px #ffffff, inset -3px -3px 10px rgba(0,0,0,0.1); }
 }
-/* ========================================================= */
 
 .ai-panel {
     position: fixed; bottom: 120px; right: 30px; width: 400px;
@@ -385,7 +486,7 @@ td:first-child { font-weight: 800; color: #0284c7; letter-spacing: 1px;}
 
 @media print {
     @page { size: A4 landscape; margin: 10mm; }
-    .cursor-glow, .login, .topbar, .controls, .cards, .ai-fab, .ai-panel, .table-info-bar, canvas#bg { display: none !important; }
+    .cursor-glow, #login-overlay, .topbar, .controls, .cards, .ai-fab, .ai-panel, .table-info-bar, canvas#bg { display: none !important; }
     body { background: #fff !important; color: #000 !important; print-color-adjust: exact; }
     .container { padding: 0 !important; margin: 0 !important; }
     .print-header-container { display: block !important; width: 100%; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
@@ -405,8 +506,33 @@ td:first-child { font-weight: 800; color: #0284c7; letter-spacing: 1px;}
 <body>
 
 <div class="cursor-glow" id="cursorGlow"></div>
-
 <canvas id="bg"></canvas>
+
+<div id="login-overlay">
+    <div class="login-wrapper">
+        <div class="login-card" style="--clr: #0284c7;">
+            <div class="circle">
+                <img src="MSB Logo.png" class="logo_img" alt="Logo PT Murinda" onerror="this.src='https://via.placeholder.com/180x80?text=Logo+MSB'">
+            </div>
+            
+            <div class="content">
+                <h2>PT MURINDA SENTRA BAJA</h2>
+                <p>
+                    Jl. Raya Kalijati Purwadadi No. 123A RT 006/02<br>
+                    Desa Kalijati Barat, Kecamatan Kalijati<br>
+                    Kabupaten Subang, West Java 41271 <br>
+                    (Exit Toll Gate Kalijati)<br><br>
+                    <strong>Phone :</strong> (+62260) 7495467<br>
+                    <strong>Fax :</strong> (+62260) 7495222<br>
+                    <strong>E-mail :</strong> plant@murinda.com
+                </p>
+                <button onclick="enterSystem()">LOGIN SISTEM</button>
+            </div>
+
+            <img src="Plant MSB.jpg" class="factory_img" alt="Plant PT Murinda" onerror="this.src='https://via.placeholder.com/320x200?text=Pabrik+MSB'">
+        </div>
+    </div>
+</div>
 
 <div class="print-header-container">
     <table class="print-header-table">
@@ -427,20 +553,9 @@ td:first-child { font-weight: 800; color: #0284c7; letter-spacing: 1px;}
     </table>
 </div>
 
-<div class="login" id="loginPage">
-    <div class="login-box">
-        <img src="Murinda Logo.png" alt="Murinda Logo" style="height: 45px; margin-bottom: 10px; object-fit: contain;">
-        <h1>MSB SYSTEM</h1>
-        <p>Enterprise Analytics Gateway</p>
-        <input type="text" id="username" placeholder="Username Account">
-        <input type="password" id="password" placeholder="Access Password">
-        <button onclick="login()">Masuk MSB System</button>
-    </div>
-</div>
-
 <div class="topbar">
     <div class="logo-area">
-        <img src="Murinda Logo.png" alt="MSB Logo" class="logo-img">
+        <img src="MSB Logo.png" alt="MSB Logo" class="logo-img" onerror="this.style.display='none'">
         <div class="logo">TRACKING PRODUCTION SYSTEM</div>
     </div>
     <div class="clock" id="clock"></div>
@@ -560,17 +675,15 @@ function drawBG(){
 }
 drawBG();
 
-function login() {
-    const user = document.getElementById('username').value.trim();
-    const pass = document.getElementById('password').value;
+// FUNGSI ENTER SYSTEM LOGIN OVERLAY
+function enterSystem() {
+    const overlay = document.getElementById('login-overlay');
+    overlay.style.opacity = '0';
+    overlay.style.visibility = 'hidden';
     
-    // Username diatur menjadi 'Kalijati' dan password '113300'
-    if(user === 'Kalijati' && pass === "113300"){
-        document.getElementById('loginPage').style.opacity = '0';
-        setTimeout(() => document.getElementById('loginPage').style.display='none', 800);
-    } else {
-        alert("Akses Ditolak! Kredensial keamanan tidak sesuai.");
-    }
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+    }, 500); 
 }
 
 async function loadData() {
