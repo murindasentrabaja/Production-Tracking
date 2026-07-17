@@ -14,26 +14,38 @@
 <style>
 * {
     margin: 0; padding: 0; box-sizing: border-box;
-    /* Font santai untuk keseluruhan body */
     font-family: 'Quicksand', sans-serif;
     cursor: default;
 }
 
 :root {
-    /* Tema Terang Normal (Bukan Dark Mode) */
-    --bg-main: #F8F9FA;
-    --bg-gradient: radial-gradient(circle at 10% 10%, #FFFFFF 0%, #F4F7FA 50%, #E9EEF4 100%);
+    /* Tema Kalem Liquid Background */
+    --bg-main: #f0f4f8; 
+    --bg-gradient: radial-gradient(circle at 15% 50%, rgba(161, 196, 253, 0.4), transparent 45%),
+                   radial-gradient(circle at 85% 30%, rgba(224, 195, 252, 0.4), transparent 45%),
+                   radial-gradient(circle at 50% 90%, rgba(194, 233, 251, 0.5), transparent 45%);
     
-    --text-main: #333333; /* Warna font biasa (abu gelap/hitam) */
-    --text-muted: #666666;
+    --text-main: #2c3e50; 
+    --text-muted: #5c6b79;
     --primary-blue: #4285f4;
     
-    --input-bg: #F1F3F4;
-    --input-hover: #E8EAED;
+    /* Variabel 3D Liquid Glass Effect */
+    --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.15));
+    --glass-border: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.3));
+    --glass-hover-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.25));
+    
+    /* Efek Gradasi Warna saat Hover */
+    --border-gradient-hover: linear-gradient(60deg, #8ec5fc, #e0c3fc, #a1c4fd, #c2e9fb);
+    
+    /* Shadow Realistis */
+    --glass-shadow: 0 15px 35px rgba(31, 38, 135, 0.07);
+    --glass-hover-shadow: 0 20px 45px rgba(31, 38, 135, 0.12);
+    /* Inset shadow memberi pantulan cahaya 3D pada pinggiran kaca */
+    --glass-inset: inset 1px 1px 3px rgba(255, 255, 255, 0.9), inset -1px -1px 3px rgba(255, 255, 255, 0.4);
 }
 
 body {
-    background: var(--bg-main);
+    background-color: var(--bg-main);
     background-image: var(--bg-gradient);
     color: var(--text-main);
     overflow-x: hidden;
@@ -41,6 +53,40 @@ body {
     position: relative;
     background-attachment: fixed;
 }
+
+/* ==========================================
+   CLASS UTAMA: 3D LIQUID GLASS
+   ========================================== */
+.glass-3d {
+    background: var(--glass-bg) padding-box, var(--glass-border) border-box;
+    border: 2px solid transparent;
+    backdrop-filter: blur(20px) saturate(120%);
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
+    box-shadow: var(--glass-shadow), var(--glass-inset);
+    border-radius: 24px;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.glass-3d:hover {
+    background: var(--glass-hover-bg) padding-box, var(--border-gradient-hover) border-box;
+    box-shadow: var(--glass-hover-shadow), var(--glass-inset);
+    transform: translateY(-5px);
+}
+
+.glass-3d-static {
+    background: var(--glass-bg) padding-box, var(--glass-border) border-box;
+    border: 2px solid transparent;
+    backdrop-filter: blur(20px) saturate(120%);
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
+    box-shadow: var(--glass-shadow), var(--glass-inset);
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.glass-3d-static:hover {
+    background: var(--glass-hover-bg) padding-box, var(--border-gradient-hover) border-box;
+    box-shadow: var(--glass-hover-shadow), var(--glass-inset);
+}
+
 
 /* ==========================================
    SCREEN LOGIN OVERLAY
@@ -61,7 +107,6 @@ body {
 .login-card {
     position: relative; width: 800px; height: 380px; display: flex;
     align-items: center; justify-content: flex-start; padding-left: 50px;
-    background: transparent; border-radius: 20px;
 }
 
 .login-card .circle {
@@ -72,9 +117,12 @@ body {
 
 .login-card .circle::before {
     content: ''; position: absolute; width: 220px; height: 220px;
-    background: transparent; border: 5px solid rgba(0,0,0,0.03);
+    background: var(--glass-bg) padding-box, var(--glass-border) border-box;
+    border: 2px solid transparent;
     border-radius: 50%;
-    transition: 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--glass-shadow), var(--glass-inset);
+    transition: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .login-card .circle .logo_img {
@@ -84,8 +132,7 @@ body {
 
 .login-card:hover .circle::before {
     width: 100%; height: 100%; border-radius: 24px;
-    background: rgba(255,255,255,0.95); border: 1px solid rgba(255,255,255,1);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    background: var(--glass-hover-bg) padding-box, var(--border-gradient-hover) border-box;
 }
 
 .login-card:hover .circle .logo_img { opacity: 0; transform: scale(0.5); }
@@ -102,31 +149,38 @@ body {
 
 .login-card .content h2 {
     font-size: 1.8rem; font-weight: 700;
-    color: var(--text-main); /* Warna biasa */
+    color: var(--text-main); 
     letter-spacing: 0.5px; margin-bottom: 12px; white-space: nowrap;
 }
 
 .login-card .content p {
-    color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.7; font-weight: 500;
+    color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.7; font-weight: 600;
 }
-.login-card .content p strong { color: var(--text-main); font-weight: 600;}
+.login-card .content p strong { color: var(--text-main); font-weight: 700;}
 
 .login-card .content button {
     display: inline-block; padding: 12px 30px;
-    background: transparent; color: var(--primary-blue);
-    border: 2px solid rgba(66, 133, 244, 0.6); /* Garis tombol warna biru transparan */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.2)) padding-box,
+                linear-gradient(135deg, rgba(66, 133, 244, 0.6), rgba(66, 133, 244, 0.2)) border-box;
+    color: var(--primary-blue);
+    border: 2px solid transparent;
     font-weight: 700; font-size: 0.9rem; cursor: pointer;
     border-radius: 30px; text-transform: uppercase; letter-spacing: 1px;
-    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05), inset 1px 1px 2px rgba(255,255,255,0.8);
+    transition: all 0.4s ease;
 }
 .login-card .content button:hover { 
-    background: rgba(66, 133, 244, 0.05);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4)) padding-box,
+                linear-gradient(60deg, #4285f4, #a1c4fd) border-box;
     transform: translateY(-3px); 
+    box-shadow: 0 8px 20px rgba(66, 133, 244, 0.15), inset 1px 1px 2px rgba(255,255,255,1);
 }
 
 .login-card .factory_img {
     position: absolute; top: 50%; left: 50%; width: 340px; height: 220px;
-    object-fit: cover; border-radius: 16px; border: 4px solid #fff; 
+    object-fit: cover; border-radius: 16px; 
+    border: 3px solid rgba(255,255,255,0.8); 
     box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     transform: translate(-50%, -50%) scale(0);
     z-index: 11; transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none;
@@ -140,29 +194,30 @@ body {
    ========================================== */
 .topbar {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 40px; background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0,0,0,0.04);
-    box-shadow: 0 4px 30px rgba(0,0,0,0.02);
+    padding: 16px 40px; 
     position: sticky; top: 0; z-index: 50;
+    border-radius: 0 0 24px 24px;
 }
 .logo-area { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
 .logo-img { height: 32px; object-fit: contain; display: block; margin-bottom: 4px;}
 .logo {
-    font-family: 'Lora', serif; /* Font elegan dan kalem */
+    font-family: 'Lora', serif;
     font-size: 26px; font-weight: 600;
-    color: #2c3e50; /* Warna font biasa */
+    color: #2c3e50; 
     letter-spacing: 1px;
 }
 .motto {
     font-family: 'Quicksand', sans-serif;
-    font-size: 13px; font-weight: 500;
-    color: #7f8c8d; font-style: italic;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted); font-style: italic;
 }
 .clock {
-    font-size: 13px; font-weight: 600; color: var(--text-muted);
-    background: #ffffff; padding: 10px 24px; border-radius: 30px;
-    border: 1px solid #E8EAED; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    font-size: 13px; font-weight: 700; color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.5); 
+    padding: 10px 24px; border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.6); 
+    box-shadow: inset 1px 1px 3px rgba(255,255,255,0.8), 0 4px 15px rgba(0,0,0,0.03);
+    backdrop-filter: blur(10px);
 }
 
 .container { padding: 30px; position: relative; z-index: 10;}
@@ -172,62 +227,69 @@ body {
    ========================================== */
 .controls {
     display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 30px;
-    background: #FFFFFF; padding: 24px; border-radius: 24px;
-    border: 1px solid #F0F0F0; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    padding: 24px; 
     align-items: center;
 }
 .controls select, .controls input {
     flex: 1; min-width: 180px; padding: 14px 22px;
-    border: 1px solid #E8EAED; border-radius: 30px; 
-    background: var(--input-bg); color: var(--text-main); 
+    border-radius: 30px; 
+    background: rgba(255, 255, 255, 0.4); 
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    color: var(--text-main); 
     font-size: 14px; font-weight: 600; outline: none; 
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     appearance: none; cursor: text;
+    box-shadow: inset 1px 1px 4px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.02);
+    backdrop-filter: blur(5px);
 }
 .controls select { cursor: pointer; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235F6368%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 20px top 50%; background-size: 12px auto; padding-right: 40px;}
-.controls select option { background: #ffffff; color: var(--text-main); font-weight:500;}
+.controls select option { background: #ffffff; color: var(--text-main); font-weight:600;}
 
-.controls select:hover, .controls input:hover { background: var(--input-hover); }
+.controls select:hover, .controls input:hover,
 .controls select:focus, .controls input:focus {
-    background: #FFFFFF; border-color: #A8C7FA;
+    background: rgba(255, 255, 255, 0.7); 
+    border-color: rgba(161, 196, 253, 0.8);
+    box-shadow: inset 1px 1px 4px rgba(0,0,0,0.02), 0 4px 12px rgba(161, 196, 253, 0.3);
 }
-.controls input::placeholder { color: #9AA0A6; font-weight: 500;}
+.controls input::placeholder { color: #8fa0b1; font-weight: 500;}
 
 .controls button {
     padding: 14px 24px; border-radius: 30px; font-size: 13px;
     cursor: pointer; font-weight: 700; 
-    letter-spacing: 0.5px; transition: all 0.3s ease;
+    letter-spacing: 0.5px; transition: all 0.4s ease;
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    background: transparent; /* Background transparan */
+    
+    /* Base Glass untuk Button */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1)) padding-box,
+                linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.3)) border-box;
+    border: 2px solid transparent;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05), inset 1px 1px 3px rgba(255, 255, 255, 0.9);
 }
 
-/* Style Tombol Hanya Garis (Smooth Transparan) */
-.btn-appsheet {
-    border: 2px solid rgba(66, 133, 244, 0.5); /* Biru smooth */
-    color: #4285f4; 
-}
+.btn-appsheet { color: #4285f4; }
 .btn-appsheet:hover { 
-    background: rgba(66, 133, 244, 0.08); 
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.3)) padding-box,
+                linear-gradient(60deg, #4285f4, #a1c4fd) border-box;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(66, 133, 244, 0.2), inset 1px 1px 3px rgba(255, 255, 255, 1);
 }
 
-.btn-sync {
-    border: 2px solid rgba(255, 152, 0, 0.5); /* Orange smooth */
-    color: #f57c00;
-}
+.btn-sync { color: #f57c00; }
 .btn-sync:hover { 
-    background: rgba(255, 152, 0, 0.08); 
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.3)) padding-box,
+                linear-gradient(60deg, #ff9800, #ffcc80) border-box;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 152, 0, 0.2), inset 1px 1px 3px rgba(255, 255, 255, 1);
 }
-.btn-sync:disabled { cursor: not-allowed; opacity: 0.7; }
+.btn-sync:disabled { cursor: not-allowed; opacity: 0.7; transform: none; box-shadow: none; }
 
-.btn-export {
-    border: 2px solid rgba(52, 168, 83, 0.5); /* Hijau smooth */
-    color: #34a853;
-}
+.btn-export { color: #34a853; }
 .btn-export:hover { 
-    background: rgba(52, 168, 83, 0.08); 
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.3)) padding-box,
+                linear-gradient(60deg, #34a853, #a5d6a7) border-box;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(52, 168, 83, 0.2), inset 1px 1px 3px rgba(255, 255, 255, 1);
 }
 
 /* Dashboard Analytics Cards */
@@ -236,74 +298,87 @@ body {
     gap: 20px; margin-bottom: 20px;
 }
 .card {
-    padding: 28px 24px; border-radius: 24px; background: #FFFFFF; 
-    border: 1px solid #F0F0F0; 
-    box-shadow: 0 8px 24px rgba(0,0,0,0.02); transition: all 0.4s ease;
+    padding: 28px 24px; 
     display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
-}
-.card:hover { 
-    transform: translateY(-6px); border-color: #E8EAED;
-    box-shadow: 0 16px 32px rgba(0,0,0,0.05); 
 }
 .card h3 { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
 .card h1 { 
     font-size: 46px; font-weight: 700; 
-    color: var(--text-main); /* Warna biasa */
+    color: var(--text-main); 
     line-height: 1;
+    text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
 }
 
 /* Container untuk Chart (Grafik) */
 .chart-container {
-    background: #FFFFFF; padding: 24px; border-radius: 24px;
-    border: 1px solid #F0F0F0; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    padding: 24px; 
     margin-bottom: 30px;
 }
 
 /* ==========================================
-   DESAIN TABEL
+   DESAIN TABEL (WRAPPED IN GLASS CONTAINER)
    ========================================== */
-.table-box {
-    overflow: auto; max-height: 600px; border-radius: 24px 24px 0 0;
-    background: #FFFFFF; border: 1px solid #F0F0F0; 
-    box-shadow: 0 12px 36px rgba(0,0,0,0.02);
+.table-container {
+    border-radius: 24px;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
 }
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #F8F9FA; border-radius: 10px; }
-::-webkit-scrollbar-thumb { background: #DADCE0; border-radius: 10px; border: 2px solid #F8F9FA;}
-::-webkit-scrollbar-thumb:hover { background: #BDC1C6; }
+
+.table-box {
+    overflow: auto; max-height: 600px; 
+    border-radius: 24px 24px 0 0;
+}
+
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.2); border-radius: 12px; }
+::-webkit-scrollbar-thumb { 
+    background: rgba(255, 255, 255, 0.5); 
+    border-radius: 12px; 
+    border: 3px solid rgba(255, 255, 255, 0.2); 
+    background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.8); }
 
 table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1700px; }
 th {
-    background: #F8F9FA; color: #3C4043;
+    background: rgba(255, 255, 255, 0.4); color: #3C4043;
+    backdrop-filter: blur(10px);
     padding: 20px 18px; font-size: 13px; font-weight: 700;
     letter-spacing: 0.5px; text-transform: uppercase;
-    position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #E8EAED;
+    position: sticky; top: 0; z-index: 10; 
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
 }
 td {
-    padding: 16px 18px; border-bottom: 1px solid #F1F3F4;
-    color: var(--text-main); text-align: center; font-size: 14px; font-weight: 500;
-    background: #FFFFFF; transition: background 0.2s;
+    padding: 16px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-main); text-align: center; font-size: 14px; font-weight: 600;
+    background: transparent; transition: background 0.3s;
 }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: #F4F7FA; }
-td:first-child { font-weight: 700; color: #333; }
+tr:hover td { background: rgba(255, 255, 255, 0.35); }
+td:first-child { font-weight: 700; color: #1a252f; }
 
+/* Status Badges Glassy Effect */
 .status { 
     padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; 
     display: inline-block; letter-spacing: 0.5px;
+    backdrop-filter: blur(5px);
+    box-shadow: inset 1px 1px 2px rgba(255,255,255,0.6);
 }
-.done { background: rgba(52, 168, 83, 0.15); color: #137333; } /* Hijau smooth */
-.process { background: rgba(255, 152, 0, 0.15); color: #B06000; } /* Orange smooth */
-.pending { background: #F1F3F4; color: #3C4043; }
+.done { background: rgba(52, 168, 83, 0.2); color: #0d5c26; border: 1px solid rgba(52, 168, 83, 0.3);} 
+.process { background: rgba(255, 152, 0, 0.2); color: #9c5500; border: 1px solid rgba(255, 152, 0, 0.3);} 
+.pending { background: rgba(255, 255, 255, 0.5); color: #3C4043; border: 1px solid rgba(255, 255, 255, 0.6);}
 .date-badge { 
-    background: rgba(66, 133, 244, 0.15); color: #174EA6; padding: 6px 14px;  /* Biru smooth */
+    background: rgba(66, 133, 244, 0.2); color: #113b80; padding: 6px 14px;  
     border-radius: 20px; font-size: 12px; font-weight: 700; 
+    backdrop-filter: blur(5px); border: 1px solid rgba(66, 133, 244, 0.3);
+    box-shadow: inset 1px 1px 2px rgba(255,255,255,0.6);
 }
 
 .table-info-bar {
-    background: #F8F9FA; color: var(--text-muted); padding: 18px 28px;
+    background: rgba(255, 255, 255, 0.3); color: var(--text-muted); padding: 18px 28px;
     border-radius: 0 0 24px 24px; font-size: 13px; display: flex; justify-content: space-between;
-    border: 1px solid #F0F0F0; border-top: none; margin-bottom: 40px; font-weight: 600;
+    border-top: 1px solid rgba(255, 255, 255, 0.5); font-weight: 700;
 }
 
 /* =========================================================
@@ -317,28 +392,32 @@ td:first-child { font-weight: 700; color: #333; }
 #appsheet-container.active { display: block; opacity: 1; }
 
 #appsheet-frame {
-    width: 100%; height: 100%; border: none; background: #fff; display: block;
+    width: 100%; height: 100%; border: none; background: transparent; display: block;
 }
 #appsheet-loader {
     position: absolute; inset: 0; width: 100%; height: 100%;
-    background: var(--bg-main); background-image: var(--bg-gradient);
+    background-color: var(--bg-main); background-image: var(--bg-gradient);
     display: flex; flex-direction: column; align-items: center; justify-content: center; 
     z-index: 999995; transition: opacity 0.8s ease;
 }
 .loader-text {
-    margin-top: 32px; font-size: 15px; font-weight: 700; color: #5F6368; letter-spacing: 2px;
+    margin-top: 32px; font-size: 15px; font-weight: 700; color: var(--text-muted); letter-spacing: 2px;
 }
 .btn-back-float {
     position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
-    padding: 14px 32px; background: rgba(255, 255, 255, 0.95);
-    border: 1px solid #E8EAED; border-radius: 40px;
+    padding: 14px 32px; 
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.2)) padding-box,
+                linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.4)) border-box;
+    border: 2px solid transparent; border-radius: 40px;
     color: #333; font-size: 13px; font-weight: 700; cursor: pointer; z-index: 999999;
-    backdrop-filter: blur(15px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); 
-    transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
+    backdrop-filter: blur(15px); box-shadow: 0 12px 24px rgba(0,0,0,0.08), inset 1px 1px 3px rgba(255,255,255,0.9); 
+    transition: all 0.4s ease; text-transform: uppercase; letter-spacing: 1px;
 }
 .btn-back-float:hover { 
-    background: #ffffff; border-color: #A8C7FA; 
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4)) padding-box,
+                var(--border-gradient-hover) border-box;
     transform: translateX(-50%) translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.12), inset 1px 1px 3px rgba(255,255,255,1);
 }
 </style>
 </head>
@@ -375,7 +454,7 @@ td:first-child { font-weight: 700; color: #333; }
     </div>
 </div>
 
-<div class="topbar">
+<div class="topbar glass-3d-static">
     <div class="logo-area">
         <img src="MSB Logo.png" alt="MSB Logo" class="logo-img" onerror="this.style.display='none'">
         <div class="logo">TRACKING PRODUCTION</div>
@@ -386,7 +465,7 @@ td:first-child { font-weight: 700; color: #333; }
 </div>
 
 <div class="container">
-    <div class="controls">
+    <div class="controls glass-3d">
         <input type="text" id="search" placeholder="🔍 Cari No PO, Unit, Serial..." onkeyup="renderTable()">
         <select id="clientFilter" onchange="onClientFilterChange()"><option value="">Semua Client</option></select>
         <select id="unitFilter" onchange="renderTable()"><option value="">Semua Komponen</option></select>
@@ -402,33 +481,35 @@ td:first-child { font-weight: 700; color: #333; }
     </div>
 
     <div class="cards">
-        <div class="card"><h3>Jumlah PO Masuk</h3><h1 id="poCount">0</h1></div>
-        <div class="card"><h3>Total Stock Produksi</h3><h1 id="stockCount">0</h1></div>
-        <div class="card"><h3>Mitra / Client</h3><h1 id="clientCount">0</h1></div>
-        <div class="card"><h3>Jumlah Unit Terkirim</h3><h1 id="deliveryCount">0</h1></div>
+        <div class="card glass-3d"><h3>Jumlah PO Masuk</h3><h1 id="poCount">0</h1></div>
+        <div class="card glass-3d"><h3>Total Stock Produksi</h3><h1 id="stockCount">0</h1></div>
+        <div class="card glass-3d"><h3>Mitra / Client</h3><h1 id="clientCount">0</h1></div>
+        <div class="card glass-3d"><h3>Jumlah Unit Terkirim</h3><h1 id="deliveryCount">0</h1></div>
     </div>
 
     <!-- Grafik Produksi -->
-    <div class="chart-container">
+    <div class="chart-container glass-3d">
         <canvas id="produksiChart" height="60"></canvas>
     </div>
 
-    <div class="table-box">
-        <table id="table">
-            <thead>
-                <tr>
-                    <th>PO Number</th><th>Unit Component</th><th>Periode</th><th>Serial Number</th>
-                    <th>Assembling</th><th>Welding</th><th>Leak Test</th><th>Filling</th>
-                    <th>Alignment</th><th>Covering</th><th>Painting</th><th>Schedule</th><th>Delivery Status</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div class="table-info-bar">
-        <div id="filterCounter">Memuat sinkronisasi data...</div>
-        <div>Licensed to PT Murinda Sentra Baja</div>
+    <!-- Wrapper Glass untuk Tabel -->
+    <div class="table-container glass-3d">
+        <div class="table-box">
+            <table id="table">
+                <thead>
+                    <tr>
+                        <th>PO Number</th><th>Unit Component</th><th>Periode</th><th>Serial Number</th>
+                        <th>Assembling</th><th>Welding</th><th>Leak Test</th><th>Filling</th>
+                        <th>Alignment</th><th>Covering</th><th>Painting</th><th>Schedule</th><th>Delivery Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="table-info-bar">
+            <div id="filterCounter">Memuat sinkronisasi data...</div>
+            <div>Licensed to PT Murinda Sentra Baja</div>
+        </div>
     </div>
 </div>
 
@@ -590,6 +671,10 @@ function updateChart() {
         myChart.data.datasets[0].data = [mitraCount, poMasuk, poTerkirim, totalStok, totalProduksi];
         myChart.update();
     } else {
+        // Tema chart disesuaikan dengan background kaca transparan
+        Chart.defaults.color = '#5c6b79';
+        Chart.defaults.font.family = "'Quicksand', sans-serif";
+        
         myChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -598,21 +683,21 @@ function updateChart() {
                     label: 'Statistik Data Produksi',
                     data: [mitraCount, poMasuk, poTerkirim, totalStok, totalProduksi],
                     backgroundColor: [
-                        'rgba(66, 133, 244, 0.2)', // Biru Smooth
-                        'rgba(255, 152, 0, 0.2)',  // Orange Smooth
-                        'rgba(52, 168, 83, 0.2)',  // Hijau Smooth
-                        'rgba(156, 39, 176, 0.2)', // Ungu 
-                        'rgba(23, 162, 184, 0.2)'  // Cyan
+                        'rgba(66, 133, 244, 0.4)', 
+                        'rgba(255, 152, 0, 0.4)',  
+                        'rgba(52, 168, 83, 0.4)',  
+                        'rgba(156, 39, 176, 0.4)', 
+                        'rgba(23, 162, 184, 0.4)'  
                     ],
                     borderColor: [
-                        'rgba(66, 133, 244, 1)', 
-                        'rgba(255, 152, 0, 1)', 
-                        'rgba(52, 168, 83, 1)',
-                        'rgba(156, 39, 176, 1)',
-                        'rgba(23, 162, 184, 1)'
+                        'rgba(66, 133, 244, 0.8)', 
+                        'rgba(255, 152, 0, 0.8)', 
+                        'rgba(52, 168, 83, 0.8)',
+                        'rgba(156, 39, 176, 0.8)',
+                        'rgba(23, 162, 184, 0.8)'
                     ],
-                    borderWidth: 1,
-                    borderRadius: 6
+                    borderWidth: 2,
+                    borderRadius: 8
                 }]
             },
             options: {
@@ -621,7 +706,7 @@ function updateChart() {
                     legend: { display: false }
                 },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#F1F3F4' } },
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.4)' } },
                     x: { grid: { display: false } }
                 }
             }
