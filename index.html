@@ -68,7 +68,8 @@ body {
 }
 
 .glass-3d:hover {
-    background: var(--glass-hover-bg) padding-box, var(--border-gradient-hover) border-box;
+    /* Gradasi hover hanya pada border, warna fill tetap --glass-bg */
+    background: var(--glass-bg) padding-box, var(--border-gradient-hover) border-box;
     box-shadow: var(--glass-hover-shadow), var(--glass-inset);
     transform: translateY(-5px);
 }
@@ -83,111 +84,11 @@ body {
 }
 
 .glass-3d-static:hover {
-    background: var(--glass-hover-bg) padding-box, var(--border-gradient-hover) border-box;
+    /* Gradasi hover hanya pada border, warna fill tetap --glass-bg */
+    background: var(--glass-bg) padding-box, var(--border-gradient-hover) border-box;
     box-shadow: var(--glass-hover-shadow), var(--glass-inset);
 }
 
-
-/* ==========================================
-   SCREEN LOGIN OVERLAY
-   ========================================== */
-#login-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 99999; display: flex; align-items: center; justify-content: center;
-    padding: 16px; background-color: var(--bg-main);
-    background-image: var(--bg-gradient);
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-}
-#login-overlay.hidden { display: none; }
-
-.login-wrapper { transform: scale(1); transition: transform 0.3s ease; }
-@media (max-width: 768px) { .login-wrapper { transform: scale(0.8); } }
-@media (max-width: 500px) { .login-wrapper { transform: scale(0.55); } }
-
-.login-card {
-    position: relative; width: 800px; height: 380px; display: flex;
-    align-items: center; justify-content: flex-start; padding-left: 50px;
-}
-
-.login-card .circle {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; justify-content: center; align-items: center;
-    z-index: 1; pointer-events: none;
-}
-
-.login-card .circle::before {
-    content: ''; position: absolute; width: 220px; height: 220px;
-    background: var(--glass-bg) padding-box, var(--glass-border) border-box;
-    border: 2px solid transparent;
-    border-radius: 50%;
-    backdrop-filter: blur(10px);
-    box-shadow: var(--glass-shadow), var(--glass-inset);
-    transition: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.login-card .circle .logo_img {
-    max-width: 180px; z-index: 12; transition: 0.4s ease-in-out;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
-}
-
-.login-card:hover .circle::before {
-    width: 100%; height: 100%; border-radius: 24px;
-    background: var(--glass-hover-bg) padding-box, var(--border-gradient-hover) border-box;
-}
-
-.login-card:hover .circle .logo_img { opacity: 0; transform: scale(0.5); }
-
-.login-card .content {
-    position: relative; z-index: 10; max-width: 420px;
-    opacity: 0; visibility: hidden; transform: translateX(-50px);
-    transition: 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.login-card:hover .content {
-    opacity: 1; visibility: visible; transform: translateX(0); transition-delay: 0.2s;
-}
-
-.login-card .content h2 {
-    font-size: 1.8rem; font-weight: 700;
-    color: var(--text-main); 
-    letter-spacing: 0.5px; margin-bottom: 12px; white-space: nowrap;
-}
-
-.login-card .content p {
-    color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.7; font-weight: 600;
-}
-.login-card .content p strong { color: var(--text-main); font-weight: 700;}
-
-.login-card .content button {
-    display: inline-block; padding: 12px 30px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.2)) padding-box,
-                linear-gradient(135deg, rgba(66, 133, 244, 0.6), rgba(66, 133, 244, 0.2)) border-box;
-    color: var(--primary-blue);
-    border: 2px solid transparent;
-    font-weight: 700; font-size: 0.9rem; cursor: pointer;
-    border-radius: 30px; text-transform: uppercase; letter-spacing: 1px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05), inset 1px 1px 2px rgba(255,255,255,0.8);
-    transition: all 0.4s ease;
-}
-.login-card .content button:hover { 
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4)) padding-box,
-                linear-gradient(60deg, #4285f4, #a1c4fd) border-box;
-    transform: translateY(-3px); 
-    box-shadow: 0 8px 20px rgba(66, 133, 244, 0.15), inset 1px 1px 2px rgba(255,255,255,1);
-}
-
-.login-card .factory_img {
-    position: absolute; top: 50%; left: 50%; width: 340px; height: 220px;
-    object-fit: cover; border-radius: 16px; 
-    border: 3px solid rgba(255,255,255,0.8); 
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    transform: translate(-50%, -50%) scale(0);
-    z-index: 11; transition: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none;
-}
-.login-card:hover .factory_img {
-    top: 50%; left: 75%; transform: translate(-50%, -50%) scale(1); transition-delay: 0.15s;
-}
 
 /* ==========================================
    MAIN DASHBOARD STYLES
@@ -432,28 +333,6 @@ td:first-child { font-weight: 700; color: #1a252f; }
     <iframe id="appsheet-frame" src=""></iframe>
 </div>
 
-<div id="login-overlay">
-    <div class="login-wrapper">
-        <div class="login-card">
-            <div class="circle">
-                <img src="MSB Logo.png" class="logo_img" alt="Logo PT Murinda" onerror="this.src='https://via.placeholder.com/180x80?text=Logo+MSB'">
-            </div>
-            <div class="content">
-                <h2>PT MURINDA SENTRA BAJA</h2>
-                <p>
-                    Jl. Raya Kalijati Purwadadi No. 123A RT 006/02<br>
-                    Desa Kalijati Barat, Kecamatan Kalijati<br>
-                    Kabupaten Subang, West Java 41271 <br><br>
-                    <strong>Phone :</strong> (+62260) 7495467<br>
-                    <strong>E-mail :</strong> plant@murinda.com
-                </p>
-                <button onclick="enterSystem()">Masuk Sistem</button>
-            </div>
-            <img src="Plant MSB.jpg" class="factory_img" alt="Plant PT Murinda" onerror="this.src='https://via.placeholder.com/320x200?text=Pabrik+MSB'">
-        </div>
-    </div>
-</div>
-
 <div class="topbar glass-3d-static">
     <div class="logo-area">
         <img src="MSB Logo.png" alt="MSB Logo" class="logo-img" onerror="this.style.display='none'">
@@ -543,12 +422,6 @@ function closeAppSheet() {
         frame.src = ""; 
         container.style.opacity = '1'; 
     }, 500);
-}
-
-function enterSystem() {
-    const overlay = document.getElementById('login-overlay');
-    overlay.style.opacity = '0'; overlay.style.visibility = 'hidden';
-    setTimeout(() => overlay.classList.add('hidden'), 500); 
 }
 
 async function loadData(btnElement = null) {
@@ -659,7 +532,6 @@ function renderTable(){
 
 /* FUNGSI GRAFIK CHART.JS */
 function updateChart() {
-    const mitraCount = [...new Set(data.map(x=>x.Client))].filter(Boolean).length;
     const poMasuk = data.filter(x => x["PO Number"]).length;
     const poTerkirim = data.filter(x => isDone(x.Delivery)).length;
     const totalStok = data.filter(x => !x["PO Number"]).length;
@@ -668,7 +540,7 @@ function updateChart() {
     const ctx = document.getElementById('produksiChart').getContext('2d');
     
     if (myChart) {
-        myChart.data.datasets[0].data = [mitraCount, poMasuk, poTerkirim, totalStok, totalProduksi];
+        myChart.data.datasets[0].data = [poMasuk, poTerkirim, totalStok, totalProduksi];
         myChart.update();
     } else {
         // Tema chart disesuaikan dengan background kaca transparan
@@ -678,19 +550,17 @@ function updateChart() {
         myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Mitra (Client)', 'PO Masuk', 'PO Terkirim', 'Jumlah Stok', 'Total Produksi'],
+                labels: ['PO Masuk', 'PO Terkirim', 'Jumlah Stok', 'Total Produksi'],
                 datasets: [{
                     label: 'Statistik Data Produksi',
-                    data: [mitraCount, poMasuk, poTerkirim, totalStok, totalProduksi],
+                    data: [poMasuk, poTerkirim, totalStok, totalProduksi],
                     backgroundColor: [
-                        'rgba(66, 133, 244, 0.4)', 
                         'rgba(255, 152, 0, 0.4)',  
                         'rgba(52, 168, 83, 0.4)',  
                         'rgba(156, 39, 176, 0.4)', 
                         'rgba(23, 162, 184, 0.4)'  
                     ],
                     borderColor: [
-                        'rgba(66, 133, 244, 0.8)', 
                         'rgba(255, 152, 0, 0.8)', 
                         'rgba(52, 168, 83, 0.8)',
                         'rgba(156, 39, 176, 0.8)',
