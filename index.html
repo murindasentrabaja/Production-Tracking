@@ -320,6 +320,73 @@ td:first-child { font-weight: 700; color: #1a252f; }
     transform: translateX(-50%) translateY(-3px);
     box-shadow: 0 15px 30px rgba(0,0,0,0.12), inset 1px 1px 3px rgba(255,255,255,1);
 }
+
+/* =========================================================
+   RESPONSIVE LAYOUT (MOBILE & PC)
+   ========================================================= */
+@media screen and (max-width: 992px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .topbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 16px 20px;
+        text-align: center;
+        border-radius: 0 0 16px 16px;
+    }
+    .logo-area {
+        align-items: center;
+        text-align: center;
+    }
+    .logo {
+        font-size: 22px;
+    }
+    .motto {
+        font-size: 12px;
+    }
+    .container {
+        padding: 16px;
+    }
+    .controls {
+        flex-direction: column;
+        padding: 20px;
+        gap: 12px;
+    }
+    .controls select, .controls input, .controls button {
+        width: 100%;
+        min-width: 100%;
+    }
+    .cards {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .card {
+        padding: 24px;
+        align-items: center;
+        text-align: center;
+    }
+    .card h1 {
+        font-size: 38px;
+    }
+    .table-info-bar {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    .btn-back-float {
+        width: 90%;
+        font-size: 12px;
+        padding: 12px;
+        top: 15px;
+    }
+    .chart-container {
+        padding: 16px;
+    }
+}
 </style>
 </head>
 <body>
