@@ -339,10 +339,12 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
     z-index: 999990; background: var(--bg-canvas);
     display: flex; flex-direction: column;
     opacity: 0; visibility: hidden; transform: scale(0.98);
+    pointer-events: none; /* FIX: Mencegah layar terblokir saat tertutup */
     transition: opacity 0.5s var(--ease-glass), transform 0.5s var(--ease-glass), visibility 0s linear 0.5s;
 }
 #overlay-container.active {
     opacity: 1; visibility: visible; transform: scale(1);
+    pointer-events: auto; /* FIX: Mengaktifkan klik kembali saat overlay dibuka */
     transition: opacity 0.5s var(--ease-glass), transform 0.5s var(--ease-glass), visibility 0s linear 0s;
 }
 
