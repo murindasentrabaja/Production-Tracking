@@ -33,6 +33,7 @@ html { scroll-behavior: smooth; }
     --accent-orange: #f5a623;
     --accent-green: #1fac71;
     --accent-pink: #ec6fa6;
+    --accent-red: #e5484d;
 
     /* Blob Aurora Latar Belakang (Dibuat Sangat Transparan agar tidak tajam/ramai) */
     --aurora-1: rgba(130, 178, 255, 0.12);
@@ -40,16 +41,16 @@ html { scroll-behavior: smooth; }
     --aurora-3: rgba(255, 175, 205, 0.08);
     --aurora-4: rgba(140, 232, 210, 0.12);
 
-    /* Variabel Liquid Glass (Disesuaikan agar lebih jernih dan elegan) */
+    /* Variabel Liquid Glass (fill selalu netral — warna aksen HANYA muncul di cincin border saat hover) */
     --glass-fill: linear-gradient(135deg, rgba(255,255,255,0.40), rgba(255,255,255,0.10));
-    --glass-fill-hover: linear-gradient(135deg, rgba(255,255,255,0.50), rgba(255,255,255,0.15));
-    --glass-border: linear-gradient(135deg, rgba(255,255,255,0.50), rgba(255,255,255,0.10));
-    --glass-border-hover: linear-gradient(120deg, rgba(142, 197, 252, 0.6), rgba(208, 179, 255, 0.6), rgba(255, 179, 209, 0.6), rgba(141, 233, 210, 0.6));
+    --glass-fill-hover: linear-gradient(135deg, rgba(255,255,255,0.52), rgba(255,255,255,0.16));
+    --glass-border: rgba(255,255,255,0.55);
     --glass-shadow: 0 8px 24px rgba(38, 52, 73, 0.04);
-    --glass-shadow-hover: 0 16px 36px rgba(38, 52, 73, 0.08);
+    --glass-shadow-hover: 0 16px 36px rgba(38, 52, 73, 0.10);
     --glass-inset: inset 1px 1px 2px rgba(255,255,255,0.6), inset -1px -1px 2px rgba(255,255,255,0.15);
 
     --ease-glass: cubic-bezier(0.22, 1, 0.36, 1);
+    --sidebar-w: 268px;
 }
 
 body {
@@ -80,34 +81,33 @@ body {
    ========================================== */
 .glass-3d, .glass-3d-static {
     position: relative;
-    background: var(--glass-fill) padding-box, var(--glass-border) border-box;
-    border: 1.5px solid transparent;
+    background: var(--glass-fill);
+    border: 1.5px solid var(--glass-border);
     border-radius: 26px;
     backdrop-filter: blur(16px) saturate(120%);
     -webkit-backdrop-filter: blur(16px) saturate(120%);
     box-shadow: var(--glass-shadow), var(--glass-inset);
-    transition: transform 0.5s var(--ease-glass), box-shadow 0.5s var(--ease-glass), background 0.5s var(--ease-glass);
+    transition: transform 0.5s var(--ease-glass), box-shadow 0.5s var(--ease-glass), background 0.5s var(--ease-glass), border-color 0.5s var(--ease-glass);
     overflow: hidden;
 }
-/* Efek kilau cahaya menyapu kaca */
+/* Overlay spotlight: sorotan cahaya lembut yang mengikuti posisi kursor (hanya pada FILL, netral/putih — bukan warna) */
 .glass-3d::before, .glass-3d-static::before {
-    content: ''; position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.4) 46%, rgba(255,255,255,0.4) 54%, transparent 70%);
-    transform: translateX(-140%);
-    transition: transform 0.9s var(--ease-glass);
+    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.45), transparent 62%);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-glass);
     mix-blend-mode: screen;
 }
-.glass-3d:hover::before, .glass-3d-static:hover::before { transform: translateX(140%); }
+.glass-3d:hover::before, .glass-3d-static:hover::before { opacity: 1; }
 
-.glass-3d:hover {
-    background: var(--glass-fill-hover) padding-box, var(--glass-border-hover) border-box;
-    box-shadow: var(--glass-shadow-hover), var(--glass-inset);
-    transform: translateY(-4px);
+/* Warna aksen hover HANYA di border (border-color asli, bukan trik layer) + glow tipis di luar kotak — keduanya tidak pernah bisa "bocor" ke fill karena bukan bagian dari area yang di-clip overflow */
+.glass-3d:hover, .glass-3d-static:hover {
+    background: var(--glass-fill-hover);
+    border-color: rgba(66,133,244,0.55);
+    box-shadow: var(--glass-shadow-hover), var(--glass-inset), 0 0 0 3px rgba(66,133,244,0.08);
 }
-.glass-3d-static:hover {
-    background: var(--glass-fill-hover) padding-box, var(--glass-border-hover) border-box;
-    box-shadow: var(--glass-shadow-hover), var(--glass-inset);
-}
+.glass-3d:hover { transform: translateY(-4px); }
+.glass-3d:active { transform: translateY(-1px) scale(0.995); }
 
 /* ==========================================
    ANIMASI MASUK HALAMAN
@@ -115,49 +115,101 @@ body {
 @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 
 /* ==========================================
-   TOPBAR
+   APP SHELL — SIDEBAR + MAIN AREA
    ========================================== */
-.topbar {
-    display: flex; justify-content: space-between; align-items: center; gap: 20px;
-    padding: 18px 42px;
-    position: sticky; top: 0; z-index: 50;
-    border-radius: 0 0 28px 28px;
+.app-shell { display: flex; align-items: flex-start; position: relative; z-index: 10; min-height: 100vh; }
+
+.sidebar {
+    width: var(--sidebar-w); flex-shrink: 0;
+    margin: 18px 0 18px 18px;
+    padding: 20px 14px;
+    height: calc(100vh - 36px);
+    position: sticky; top: 18px;
+    display: flex; flex-direction: column; gap: 20px;
     animation: fadeSlideUp 0.7s var(--ease-glass) both;
 }
-.logo-area { display: flex; align-items: center; gap: 16px; }
-
-/* PENYESUAIAN LOGO: Dibuat lebih lega, tidak membulat sempit, shadow dihilangkan */
-.logo-mark { 
-    width: 52px; 
-    height: 52px; 
-    border-radius: 4px; 
-    object-fit: contain; 
-    display: block; 
-    background: transparent;
-    box-shadow: none; 
-}
+.sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 2px 8px 18px; border-bottom: 1px solid rgba(255,255,255,0.6); }
+.logo-mark { width: 42px; height: 42px; border-radius: 4px; object-fit: contain; display: block; background: transparent; box-shadow: none; flex-shrink: 0; }
 .logo-badge {
-    display: flex; align-items: center; justify-content: center;
+    display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; font-size: 12px;
     border-radius: 8px; color: var(--accent-blue); font-family: 'Lora', serif; font-weight: 700;
-    background: transparent; border: 1.5px solid rgba(66,133,244,0.4);
-    box-shadow: none; flex-shrink: 0;
+    background: transparent; border: 1.5px solid rgba(66,133,244,0.4); box-shadow: none; flex-shrink: 0;
+}
+.logo-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.logo { font-family: 'Lora', serif; font-size: 17px; font-weight: 600; color: var(--text-main); letter-spacing: 0.3px; line-height: 1.2; }
+.motto { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.sidebar-close-btn { display: none; margin-left: auto; background: none; border: none; color: var(--text-faint); font-size: 18px; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+.sidebar-nav, .sidebar-footer { display: flex; flex-direction: column; gap: 3px; }
+.sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.6); }
+.sidebar-scroll { overflow-y: auto; display: flex; flex-direction: column; gap: 20px; flex: 1; min-height: 0; }
+.nav-label { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-faint); padding: 8px 12px 2px; }
+
+.nav-item {
+    position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border-radius: 15px; border: none; background: transparent; cursor: pointer;
+    font-family: 'Quicksand', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-muted);
+    text-align: left; width: 100%; transition: background 0.35s var(--ease-glass), color 0.35s var(--ease-glass), transform 0.35s var(--ease-glass);
+}
+.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; transition: opacity 0.3s; }
+.nav-item span:not(.nav-badge) { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-item .ext-icon { width: 12px; height: 12px; opacity: 0.4; flex: none; }
+.nav-item:hover { background: rgba(255,255,255,0.55); color: var(--text-main); transform: translateX(2px); }
+.nav-item:hover svg { opacity: 1; }
+.nav-item:active { transform: translateX(2px) scale(0.98); }
+.nav-item.active {
+    color: #fff;
+    background: linear-gradient(120deg, var(--accent-blue), #6a9bfb);
+    box-shadow: 0 8px 18px rgba(66,133,244,0.32);
+}
+.nav-item.active svg { opacity: 1; }
+.nav-item .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.6); transform: scale(0); animation: rippleAnim 0.6s ease-out; pointer-events: none; }
+.nav-badge {
+    background: var(--accent-red); color: #fff; font-size: 10px; font-weight: 800; flex: none;
+    padding: 2px 7px; border-radius: 999px; min-width: 17px; text-align: center; line-height: 1.5;
+    box-shadow: 0 2px 6px rgba(229,72,77,0.4);
+}
+.nav-item.active .nav-badge { background: rgba(255,255,255,0.95); color: var(--accent-red); }
+
+.hamburger-btn { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: var(--text-main); flex-shrink: 0; }
+.hamburger-btn svg { width: 22px; height: 22px; }
+.sidebar-backdrop { display: none; }
+
+.nav-item:focus-visible, .btn:focus-visible, .hamburger-btn:focus-visible, .sidebar-close-btn:focus-visible {
+    outline: 2px solid var(--accent-blue); outline-offset: 2px;
 }
 
-.logo-text { display: flex; flex-direction: column; gap: 2px; }
-.logo { font-family: 'Lora', serif; font-size: 24px; font-weight: 600; color: var(--text-main); letter-spacing: 0.5px; }
-.motto { font-size: 12.5px; font-weight: 600; color: var(--text-muted); font-style: italic; }
+/* ==========================================
+   MAIN AREA / TOPBAR
+   ========================================== */
+.main-area { flex: 1; min-width: 0; }
+.topbar {
+    display: flex; justify-content: space-between; align-items: center; gap: 20px;
+    padding: 16px 28px;
+    margin: 18px 18px 0;
+    position: sticky; top: 18px; z-index: 50;
+    animation: fadeSlideUp 0.7s var(--ease-glass) both;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.page-title-wrap { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.page-title { font-family: 'Lora', serif; font-size: 19px; font-weight: 600; color: var(--text-main); letter-spacing: 0.2px; transition: opacity 0.3s ease; }
+.page-subtitle { font-size: 11.5px; font-weight: 600; color: var(--text-muted); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .clock-wrap {
     display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: var(--text-muted);
     background: rgba(255,255,255,0.6); padding: 11px 22px; border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.8); flex-shrink: 0;
     box-shadow: inset 1px 1px 3px rgba(255,255,255,0.9), 0 4px 12px rgba(0,0,0,0.03);
     backdrop-filter: blur(12px);
 }
 .clock-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); animation: pulseDot 2s infinite; flex-shrink: 0; }
 @keyframes pulseDot { 0%{ box-shadow: 0 0 0 0 rgba(31,172,113,0.5); } 70%{ box-shadow: 0 0 0 8px rgba(31,172,113,0); } 100%{ box-shadow: 0 0 0 0 rgba(31,172,113,0); } }
 
-.container { padding: 32px 40px 60px; position: relative; z-index: 10; }
+.container { padding: 22px 32px 60px; position: relative; z-index: 10; }
+
+/* Sistem ganti tampilan (Dashboard <-> Checklist) tanpa reload/scroll panjang */
+.view { display: none; }
+.view.active { display: block; animation: fadeSlideUp 0.5s var(--ease-glass) both; }
 
 /* ==========================================
    KONTROL (FILTER & TOMBOL)
@@ -195,59 +247,34 @@ body {
 }
 .field-search input::placeholder { color: #93a1b8; font-weight: 500; }
 
-/* Tombol */
+/* Tombol — satu sistem hover konsisten: fill tetap netral, warna aksen hanya muncul di border + ikon/teks */
 .btn {
     position: relative; overflow: hidden; cursor: pointer;
     padding: 13px 22px; border-radius: 999px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.4px;
     display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
     transition: all 0.4s var(--ease-glass);
-    background: var(--glass-fill) padding-box, var(--glass-border) border-box;
-    border: 1.5px solid transparent;
+    background: var(--glass-fill);
+    border: 1.5px solid var(--glass-border);
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.03), inset 1px 1px 3px rgba(255,255,255,0.7);
+    color: var(--btn-accent, var(--text-main));
+}
+.btn:hover {
+    transform: translateY(-3px);
+    background: var(--glass-fill-hover);
+    border-color: var(--btn-accent, var(--accent-blue));
+    box-shadow: 0 10px 22px rgba(38,52,73,0.10), inset 1px 1px 3px #fff;
 }
 .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
 .btn:active { transform: scale(0.96); }
 .btn .ripple, .ov-btn .ripple {
     position: absolute; border-radius: 50%; background: rgba(255,255,255,0.75);
-    transform: scale(0); animation: rippleAnim 0.6s ease-out; pointer-events: none;
+    transform: scale(0); animation: rippleAnim 0.6s ease-out; pointer-events: none; z-index: 3;
 }
 @keyframes rippleAnim { to { transform: scale(3); opacity: 0; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 .btn.is-loading svg { animation: spin 0.9s linear infinite; }
-
-.btn-appsheet { color: #2f66d0; }
-.btn-appsheet:hover {
-    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5)) padding-box,
-                linear-gradient(60deg, #4285f4, #a1c4fd) border-box;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(66,133,244,0.15), inset 1px 1px 3px #fff;
-}
-
-.btn-portal { color: #6d3fc9; }
-.btn-portal:hover {
-    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5)) padding-box,
-                linear-gradient(60deg, #8b5cf6, #d0b3ff) border-box;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(139,92,246,0.15), inset 1px 1px 3px #fff;
-}
-
-.btn-sync { color: #b3690a; }
-.btn-sync:hover {
-    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5)) padding-box,
-                linear-gradient(60deg, #f5a623, #ffd699) border-box;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(245,166,35,0.15), inset 1px 1px 3px #fff;
-}
-.btn-sync:disabled { cursor: not-allowed; opacity: 0.65; transform: none; box-shadow: none; }
-
-.btn-export { color: #0f8a58; }
-.btn-export:hover {
-    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5)) padding-box,
-                linear-gradient(60deg, #1fac71, #a8e6c9) border-box;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(31,172,113,0.15), inset 1px 1px 3px #fff;
-}
+.btn:disabled { cursor: not-allowed; opacity: 0.65; transform: none !important; box-shadow: none; }
 
 /* ==========================================
    KARTU STATISTIK
@@ -331,6 +358,112 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
     flex-wrap: wrap; gap: 8px; border-top: 1px solid rgba(255,255,255,0.7); font-weight: 700;
 }
 
+/* ==========================================
+   CHECKLIST KONDISI ALAT & MESIN (MODUL TERPISAH)
+   ========================================== */
+.checklist-section-wrap { margin-top: 6px; }
+.checklist-head {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+    margin-bottom: 18px;
+}
+.checklist-head h2 { font-family: 'Lora', serif; font-size: 20px; font-weight: 600; color: var(--text-main); }
+.checklist-head p { font-size: 12.5px; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
+.checklist-refresh-btn { --btn-accent: #c0392b; }
+
+#checklistTable { min-width: 900px; }
+
+.kondisi-badge {
+    padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.4px;
+    backdrop-filter: blur(6px); box-shadow: inset 1px 1px 2px rgba(255,255,255,0.7);
+}
+.kondisi-baik { background: rgba(31,172,113,0.12); color: #0d6b3f; border: 1px solid rgba(31,172,113,0.25); }
+.kondisi-rusak { background: rgba(229,72,77,0.14); color: #b3261e; border: 1px solid rgba(229,72,77,0.3); }
+.kondisi-rusak::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-red); animation: pulseDot2 1.6s infinite; }
+
+.row-rusak { background: rgba(229,72,77,0.05); }
+.row-rusak:hover td { background: rgba(229,72,77,0.1) !important; }
+
+.btn-repair {
+    padding: 9px 16px; border-radius: 999px; font-size: 11.5px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-red), #ff8a80); color: #fff; border: none; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(229,72,77,0.25);
+    transition: all 0.3s var(--ease-glass);
+}
+.btn-repair:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(229,72,77,0.35); }
+.btn-repair-done {
+    padding: 9px 16px; border-radius: 999px; font-size: 11.5px; font-weight: 700;
+    background: rgba(31,172,113,0.12); color: #0d6b3f; border: 1px solid rgba(31,172,113,0.25);
+    display: inline-flex; align-items: center; gap: 6px;
+}
+
+/* ===== Notifikasi Toast (Alat Rusak) ===== */
+#notifToast {
+    position: fixed; top: 24px; right: 24px; z-index: 999998; max-width: 360px;
+    display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; border-radius: 20px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(255,245,245,0.92));
+    border: 1.5px solid rgba(229,72,77,0.3); box-shadow: 0 16px 36px rgba(229,72,77,0.18), inset 1px 1px 2px rgba(255,255,255,0.8);
+    backdrop-filter: blur(16px);
+    transform: translateX(420px); opacity: 0; pointer-events: none;
+    transition: transform 0.55s var(--ease-glass), opacity 0.55s var(--ease-glass);
+}
+#notifToast.show { transform: translateX(0); opacity: 1; pointer-events: auto; }
+.notif-icon {
+    width: 42px; height: 42px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent-red), #ff8a80); color: #fff; box-shadow: 0 6px 14px rgba(229,72,77,0.3);
+    animation: pulseDot 2s infinite;
+}
+.notif-icon svg { width: 20px; height: 20px; }
+.notif-body { flex: 1; min-width: 0; }
+.notif-body h4 { font-size: 13.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+.notif-body p { font-size: 12px; color: var(--text-muted); font-weight: 600; line-height: 1.4; margin-bottom: 10px; }
+.notif-actions { display: flex; gap: 8px; }
+.notif-btn-view {
+    padding: 8px 14px; border-radius: 999px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+    background: linear-gradient(135deg, var(--accent-red), #ff8a80); color: #fff; border: none;
+    box-shadow: 0 4px 10px rgba(229,72,77,0.25);
+}
+.notif-btn-dismiss {
+    padding: 8px 14px; border-radius: 999px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+    background: rgba(255,255,255,0.7); color: var(--text-muted); border: 1px solid rgba(0,0,0,0.06);
+}
+.notif-close-x {
+    position: absolute; top: 10px; right: 12px; cursor: pointer; color: var(--text-faint); font-size: 15px; line-height: 1;
+    background: none; border: none; padding: 4px;
+}
+
+/* ===== Modal: Daftar Alat Rusak ===== */
+#modalRusakOverlay {
+    position: fixed; inset: 0; z-index: 999995; background: rgba(38,52,73,0.35); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+    opacity: 0; visibility: hidden; transition: opacity 0.4s var(--ease-glass), visibility 0s linear 0.4s;
+}
+#modalRusakOverlay.active { opacity: 1; visibility: visible; transition: opacity 0.4s var(--ease-glass), visibility 0s linear 0s; }
+.modal-box {
+    width: 100%; max-width: 640px; max-height: 82vh; display: flex; flex-direction: column;
+    border-radius: 28px; overflow: hidden; transform: translateY(20px) scale(0.97);
+    transition: transform 0.45s var(--ease-glass);
+    background: linear-gradient(135deg, rgba(255,255,255,0.97), rgba(255,250,250,0.94));
+    box-shadow: 0 30px 60px rgba(38,52,73,0.2);
+}
+#modalRusakOverlay.active .modal-box { transform: translateY(0) scale(1); }
+.modal-header { padding: 22px 26px; border-bottom: 1px solid rgba(229,72,77,0.15); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.modal-header h3 { font-family: 'Lora', serif; font-size: 18px; font-weight: 600; color: var(--text-main); }
+.modal-header p { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
+.modal-close-btn { background: none; border: none; cursor: pointer; color: var(--text-faint); font-size: 20px; flex-shrink: 0; }
+.modal-body { padding: 18px 26px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+.modal-item-card {
+    padding: 16px 18px; border-radius: 18px; background: rgba(229,72,77,0.05); border: 1px solid rgba(229,72,77,0.15);
+    display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+}
+.modal-item-info h5 { font-size: 13.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+.modal-item-info span { font-size: 11.5px; color: var(--text-muted); font-weight: 600; display: block; margin-top: 2px; }
+.modal-footer { padding: 16px 26px; border-top: 1px solid rgba(0,0,0,0.05); text-align: center; }
+.modal-footer button {
+    padding: 10px 20px; border-radius: 999px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+    background: rgba(0,0,0,0.05); border: none; color: var(--text-muted);
+}
+
 /* =========================================================
    OVERLAY FULL (AppSheet & Portal Delivery)
    ========================================================= */
@@ -386,18 +519,33 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
    ========================================================= */
 @media screen and (max-width: 992px) {
     .cards { grid-template-columns: repeat(2, 1fr); }
+    .sidebar {
+        position: fixed; top: 0; left: 0; margin: 0; height: 100vh; width: min(82vw, 300px);
+        border-radius: 0 26px 26px 0; z-index: 200;
+        transform: translateX(-105%); transition: transform 0.45s var(--ease-glass);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-close-btn { display: inline-flex; }
+    .hamburger-btn { display: inline-flex; }
+    .sidebar-backdrop {
+        display: block; position: fixed; inset: 0; background: rgba(20,26,38,0.4); backdrop-filter: blur(2px);
+        z-index: 150; opacity: 0; visibility: hidden; transition: opacity 0.4s var(--ease-glass), visibility 0s linear 0.4s;
+    }
+    .sidebar-backdrop.show { opacity: 1; visibility: visible; transition: opacity 0.4s var(--ease-glass); }
 }
 @media screen and (max-width: 768px) {
-    .topbar { flex-direction: column; gap: 14px; padding: 16px 20px; text-align: center; border-radius: 0 0 20px 20px; }
-    .logo-area { flex-direction: column; }
-    .logo { font-size: 21px; }
-    .container { padding: 18px; }
+    .topbar { padding: 14px 18px; margin: 14px 14px 0; }
+    .page-subtitle { display: none; }
+    .clock-wrap { padding: 9px 16px; font-size: 11.5px; }
+    .container { padding: 16px; }
     .controls { flex-direction: column; padding: 20px; gap: 12px; }
     .controls select, .field-search, .btn { width: 100%; min-width: 100%; }
     .cards { grid-template-columns: 1fr; gap: 14px; }
     .card { padding: 22px; }
     .card h1 { font-size: 28px; }
     .table-info-bar { flex-direction: column; text-align: center; }
+    #notifToast { left: 16px; right: 16px; top: 16px; max-width: none; }
+    .modal-item-card { flex-direction: column; align-items: flex-start; }
     #overlay-topbar { flex-direction: column; gap: 10px; padding: 14px 18px; }
     .ov-actions { width: 100%; justify-content: center; }
     .chart-container { padding: 18px; }
@@ -422,6 +570,39 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
     <span class="aurora-blob b2"></span>
     <span class="aurora-blob b3"></span>
     <span class="aurora-blob b4"></span>
+</div>
+
+<!-- ============== NOTIFIKASI: ALAT RUSAK ============== -->
+<div id="notifToast">
+    <button class="notif-close-x" onclick="dismissNotifToast()">✕</button>
+    <div class="notif-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+    </div>
+    <div class="notif-body">
+        <h4>⚠️ Alat Terdeteksi Rusak</h4>
+        <p id="notifTextCount">Ada alat/mesin dengan kondisi rusak dari hasil checklist.</p>
+        <div class="notif-actions">
+            <button class="notif-btn-view" onclick="openModalRusak()">Lihat Detail</button>
+            <button class="notif-btn-dismiss" onclick="dismissNotifToast()">Nanti Saja</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============== MODAL: DAFTAR ALAT RUSAK ============== -->
+<div id="modalRusakOverlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div>
+                <h3>⚠️ Alat & Mesin Kondisi Rusak</h3>
+                <p>Pilih alat untuk langsung membuat form order perbaikan maintenance</p>
+            </div>
+            <button class="modal-close-btn" onclick="closeModalRusak()">✕</button>
+        </div>
+        <div class="modal-body" id="modalRusakBody"></div>
+        <div class="modal-footer">
+            <button onclick="closeModalRusak()">Tutup</button>
+        </div>
+    </div>
 </div>
 
 <!-- ============== OVERLAY FULL: AppSheet / Portal Delivery ============== -->
@@ -454,18 +635,74 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
     <iframe id="overlay-frame" src="" title="MSB External Portal"></iframe>
 </div>
 
-<div class="topbar glass-3d-static">
-    <div class="logo-area">
-        <img src="MSB Logo.png" alt="MSB Logo" class="logo-mark" onerror="logoFallback(this,48)">
-        <div class="logo-text">
-            <div class="logo">TRACKING PRODUCTION</div>
-            <div class="motto">"Bekerja Cerdas, Berkualitas, Keselamatan Terjaga, dan Tuntas"</div>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+<div class="app-shell">
+    <aside class="sidebar glass-3d-static" id="sidebar">
+        <div class="sidebar-brand">
+            <img src="MSB Logo.png" alt="MSB Logo" class="logo-mark" onerror="logoFallback(this,42)">
+            <div class="logo-text">
+                <div class="logo">MSB ERP</div>
+                <div class="motto">Production Tracking</div>
+            </div>
+            <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Tutup menu">✕</button>
         </div>
-    </div>
-    <div class="clock-wrap"><span class="clock-dot"></span><span id="clock"></span></div>
-</div>
+
+        <div class="sidebar-scroll">
+            <nav class="sidebar-nav">
+                <div class="nav-label">Menu Utama</div>
+                <button class="nav-item active" data-view="dashboard" onclick="switchView('dashboard', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
+                    <span>Dashboard Produksi</span>
+                </button>
+                <button class="nav-item" data-view="checklist" onclick="switchView('checklist', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    <span>Checklist Alat &amp; Mesin</span>
+                    <span class="nav-badge" id="sidebarRusakBadge" hidden>0</span>
+                </button>
+
+                <div class="nav-label">Sistem Eksternal</div>
+                <button class="nav-item" onclick="openOverlay('appsheet')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+                    <span>Sistem Produksi</span>
+                    <svg class="ext-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </button>
+                <button class="nav-item" onclick="openOverlay('portal')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11" rx="1.5"></rect><path d="M15 10h4l3 3.5V17h-7z"></path><circle cx="6" cy="19" r="2"></circle><circle cx="17.5" cy="19" r="2"></circle></svg>
+                    <span>Portal Delivery</span>
+                    <svg class="ext-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </button>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="btn" id="syncBtn" style="--btn-accent:#b3690a; width:100%; margin-bottom:8px;" onclick="loadData(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><polyline points="21 3 21 9 15 9"></polyline></svg>
+                <span>Perbarui Data</span>
+            </button>
+            <button class="btn" style="--btn-accent:#0f8a58; width:100%;" onclick="exportExcel()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 19h14"></path></svg>
+                <span>Export Sheet</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-area">
+        <div class="topbar glass-3d-static">
+            <div class="topbar-left">
+                <button class="hamburger-btn" onclick="openSidebar()" aria-label="Buka menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+                <div class="page-title-wrap">
+                    <div class="page-title" id="pageTitle">Dashboard Produksi</div>
+                    <div class="page-subtitle" id="pageSubtitle">"Bekerja Cerdas, Berkualitas, Keselamatan Terjaga, dan Tuntas"</div>
+                </div>
+            </div>
+            <div class="clock-wrap"><span class="clock-dot"></span><span id="clock"></span></div>
+        </div>
 
 <div class="container">
+    <div class="view active" id="view-dashboard">
     <div class="controls glass-3d">
         <div class="field-search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -479,22 +716,6 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
             <option value="PROCESS">Process</option>
             <option value="PENDING">Pending</option>
         </select>
-        <button class="btn btn-appsheet" onclick="openOverlay('appsheet')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
-            <span>Sistem Produksi</span>
-        </button>
-        <button class="btn btn-portal" onclick="openOverlay('portal')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11" rx="1.5"></rect><path d="M15 10h4l3 3.5V17h-7z"></path><circle cx="6" cy="19" r="2"></circle><circle cx="17.5" cy="19" r="2"></circle></svg>
-            <span>Portal Delivery</span>
-        </button>
-        <button class="btn btn-sync" id="syncBtn" onclick="loadData(this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><polyline points="21 3 21 9 15 9"></polyline></svg>
-            <span>Perbarui Data</span>
-        </button>
-        <button class="btn btn-export" onclick="exportExcel()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 19h14"></path></svg>
-            <span>Export Sheet</span>
-        </button>
     </div>
 
     <div class="cards">
@@ -547,7 +768,53 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
             <div>Licensed to PT Murinda Sentra Baja</div>
         </div>
     </div>
-</div>
+    </div><!-- /view-dashboard -->
+
+    <!-- ============== VIEW: CHECKLIST KONDISI ALAT & MESIN (diakses lewat sidebar) ============== -->
+    <div class="view checklist-section-wrap" id="view-checklist">
+        <div class="checklist-head">
+            <div>
+                <h2>🛠️ Checklist Kondisi Alat & Mesin</h2>
+                <p>Monitoring hasil checklist kelayakan alat — sinkron dari sheet "Hasil Perbaikan"</p>
+            </div>
+            <button class="btn checklist-refresh-btn" id="checklistSyncBtn" onclick="loadChecklistData(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><polyline points="21 3 21 9 15 9"></polyline></svg>
+                <span>Perbarui Checklist</span>
+            </button>
+        </div>
+
+        <div class="cards" style="margin-bottom:22px;">
+            <div class="card glass-3d">
+                <div class="card-icon" style="background:linear-gradient(135deg, var(--accent-green), #7fe0b8);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                <div class="card-body"><h3>Alat Kondisi Baik</h3><h1 id="checklistBaikCount">0</h1></div>
+            </div>
+            <div class="card glass-3d">
+                <div class="card-icon" style="background:linear-gradient(135deg, var(--accent-red), #ff8a80);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+                <div class="card-body"><h3>Alat Kondisi Rusak</h3><h1 id="checklistRusakCount">0</h1></div>
+            </div>
+        </div>
+
+        <div class="table-container glass-3d">
+            <div class="table-box">
+                <table id="checklistTable">
+                    <thead>
+                        <tr>
+                            <th>Kode Alat</th><th>Nama Alat</th><th>Lokasi</th><th>Kondisi</th>
+                            <th>Tanggal Checklist</th><th>Catatan</th><th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody><tr><td colspan="7" style="text-align:center; padding:30px;">Memuat data checklist...</td></tr></tbody>
+                </table>
+            </div>
+            <div class="table-info-bar">
+                <div id="checklistFilterCounter">Memuat sinkronisasi data checklist...</div>
+                <div>Sumber: Checklist Kelayakan Alat - MSB</div>
+            </div>
+        </div>
+    </div><!-- /view-checklist -->
+</div><!-- /container -->
+    </div><!-- /main-area -->
+</div><!-- /app-shell -->
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwQ-IdTpITanL6GPLJaTa5I3CXDF6nEu-dW5nmr9SmcnGjq_L_Uy5wGcLNaZt2b1AC6UA/exec";
@@ -638,9 +905,9 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-/* ========== Efek Ripple pada Tombol ========== */
+/* ========== Efek Ripple pada Tombol & Menu Sidebar ========== */
 document.addEventListener('click', function (e) {
-    const btn = e.target.closest('.btn, .ov-btn');
+    const btn = e.target.closest('.btn, .ov-btn, .nav-item');
     if (!btn) return;
     const rect = btn.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
@@ -652,6 +919,56 @@ document.addEventListener('click', function (e) {
     btn.appendChild(ripple);
     setTimeout(() => ripple.remove(), 650);
 });
+
+/* ========== Sidebar: Menu Navigasi & Ganti Tampilan (Dashboard <-> Checklist) ========== */
+const pageMeta = {
+    dashboard: { title: 'Dashboard Produksi', subtitle: '"Bekerja Cerdas, Berkualitas, Keselamatan Terjaga, dan Tuntas"' },
+    checklist: { title: 'Checklist Alat & Mesin', subtitle: 'Monitoring hasil checklist kelayakan alat & mesin produksi' }
+};
+
+function switchView(view, btnEl) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const target = document.getElementById('view-' + view);
+    if (target) target.classList.add('active');
+
+    document.querySelectorAll('.nav-item[data-view]').forEach(n => n.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+
+    const meta = pageMeta[view];
+    if (meta) {
+        document.getElementById('pageTitle').innerText = meta.title;
+        document.getElementById('pageSubtitle').innerText = meta.subtitle;
+    }
+    closeSidebar();
+}
+
+function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarBackdrop').classList.add('show');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarBackdrop').classList.remove('show');
+}
+
+function updateSidebarBadge(count) {
+    const badge = document.getElementById('sidebarRusakBadge');
+    if (!badge) return;
+    if (count > 0) { badge.innerText = count > 99 ? '99+' : count; badge.hidden = false; }
+    else { badge.hidden = true; }
+}
+
+/* ========== Overlay Spotlight: sorotan cahaya mengikuti posisi kursor pada panel kaca ========== */
+function initSpotlight() {
+    document.querySelectorAll('.glass-3d, .glass-3d-static').forEach(el => {
+        el.addEventListener('pointermove', e => {
+            const rect = el.getBoundingClientRect();
+            el.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+            el.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+        });
+    });
+}
+initSpotlight();
 
 /* ========== Animasi Angka (Count-Up) ========== */
 function animateValue(id, end) {
@@ -848,11 +1165,195 @@ function updateChart() {
 
 function exportExcel(){ XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById('table')), 'MSB_Data_Produksi.xlsx'); }
 
+/* ========================================================
+   CHECKLIST KONDISI ALAT & MESIN — MODUL TERPISAH
+   ======================================================== */
+// TODO: Ganti dengan URL Web App Apps Script yang membaca sheet
+// "Hasil Perbaikan" pada spreadsheet "Checklist Kelayakan Alat - MSB".
+// Lihat contoh kode Apps Script yang saya berikan di chat.
+const CHECKLIST_API = "https://script.google.com/macros/s/AKfycbzVxHQUbg4TGBUL650WYpcjcfmGHlXN1Ps4g_WAMyktjdxoQK2wqoC0IaXsgwQYV9Ho/exec";
+
+// URL Apps Script Form Perbaikan Mesin (dipakai untuk cek WO yang sudah pernah dibuat,
+// supaya alat yang kondisinya rusak tidak dinotifikasi berulang jika sudah ada order-nya)
+const WO_API = "https://script.google.com/macros/s/AKfycbwLHq5H8zert5RfabthvPwa_QvKTO5GsS7-GhC7rMMnqlbPvQWlLRZFNvxdHu5c6dLg/exec";
+
+let checklistData = [];
+let existingWOAssetIds = new Set();
+let notifDismissed = false;
+
+function getField(obj, keys) {
+    for (const k of keys) {
+        if (obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== '') return obj[k];
+    }
+    return '';
+}
+
+function isKondisiRusak(v) {
+    return String(v || '').toUpperCase().includes('RUSAK');
+}
+
+function escapeAttr(str) {
+    return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+async function loadChecklistData(btnElement = null) {
+    let span = null, originalText = "";
+    if (btnElement) {
+        span = btnElement.querySelector('span');
+        originalText = span.innerText;
+        span.innerText = "Memperbarui...";
+        btnElement.disabled = true;
+        btnElement.classList.add('is-loading');
+    }
+
+    try {
+        // Ambil daftar WO yang sudah pernah dibuat (dari sistem Form Perbaikan Mesin)
+        try {
+            const woRes = await fetch(WO_API + "?t=" + new Date().getTime(), { cache: "no-store" });
+            const woData = await woRes.json();
+            existingWOAssetIds = new Set((woData.permintaan || []).map(p => String(p.id_aset || '').trim().toUpperCase()));
+        } catch (e) {
+            console.warn("Tidak bisa memuat data WO existing:", e);
+        }
+
+        const res = await fetch(CHECKLIST_API + "?t=" + new Date().getTime(), { cache: "no-store" });
+        const raw = await res.json();
+        checklistData = Array.isArray(raw) ? raw : (raw.data || []);
+
+        renderChecklistTable();
+        evaluateRusakNotification();
+
+    } catch (error) {
+        console.error("Gagal memuat data checklist:", error);
+        document.getElementById('checklistFilterCounter').innerHTML = "⚠️ Gagal memuat data checklist. Periksa URL CHECKLIST_API.";
+    } finally {
+        if (btnElement) {
+            span.innerText = originalText;
+            btnElement.disabled = false;
+            btnElement.classList.remove('is-loading');
+        }
+    }
+}
+
+function renderChecklistTable() {
+    const tbody = document.querySelector('#checklistTable tbody');
+    let baikCount = 0, rusakCount = 0;
+
+    let rows = checklistData.map(item => {
+        const kodeAlat = getField(item, ['Kode Alat', 'Kode alat', 'ID Alat', 'No Inventory']);
+        const namaAlat = getField(item, ['Nama Alat', 'Nama alat']);
+        const lokasi = getField(item, ['Lokasi', 'Lokasi Alat']);
+        const kondisi = getField(item, ['Kondisi', 'Status', 'Kondisi Alat', 'Hasil Checklist']);
+        const tanggal = getField(item, ['Tanggal', 'Timestamp', 'Tanggal Checklist']);
+        const catatan = getField(item, ['Catatan', 'Keterangan', 'Note']) || '-';
+        const rusak = isKondisiRusak(kondisi);
+        if (rusak) rusakCount++; else if (kondisi) baikCount++;
+
+        const sudahAdaWO = existingWOAssetIds.has(String(kodeAlat).trim().toUpperCase());
+
+        let aksi = '-';
+        if (rusak) {
+            aksi = sudahAdaWO
+                ? `<span class="btn-repair-done">✔️ WO Sudah Dibuat</span>`
+                : `<button class="btn-repair" onclick="bukaFormPerbaikan('${escapeAttr(kodeAlat)}','${escapeAttr(namaAlat)}','${escapeAttr(lokasi)}')">🔧 Buat Form Perbaikan</button>`;
+        }
+
+        return {
+            html: `<tr class="${rusak ? 'row-rusak' : ''}">
+                <td class="mono">${kodeAlat || '-'}</td>
+                <td>${namaAlat || '-'}</td>
+                <td>${lokasi || '-'}</td>
+                <td>${kondisi ? `<span class="kondisi-badge ${rusak ? 'kondisi-rusak' : 'kondisi-baik'}">${kondisi}</span>` : '-'}</td>
+                <td>${formatDate(tanggal)}</td>
+                <td>${catatan}</td>
+                <td>${aksi}</td>
+            </tr>`,
+            sortKey: rusak ? 0 : 1
+        };
+    });
+
+    rows.sort((a, b) => a.sortKey - b.sortKey);
+
+    tbody.innerHTML = rows.length ? rows.map(r => r.html).join('') : '<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">Belum ada data checklist.</td></tr>';
+
+    animateValue('checklistBaikCount', baikCount);
+    animateValue('checklistRusakCount', rusakCount);
+    updateSidebarBadge(rusakCount);
+    document.getElementById('checklistFilterCounter').innerHTML = `Total <strong style="color:var(--accent-blue)">${checklistData.length}</strong> data checklist dimuat.`;
+}
+
+function evaluateRusakNotification() {
+    const itemsRusakBelumWO = checklistData.filter(item => {
+        const kondisi = getField(item, ['Kondisi', 'Status', 'Kondisi Alat', 'Hasil Checklist']);
+        const kodeAlat = getField(item, ['Kode Alat', 'Kode alat', 'ID Alat', 'No Inventory']);
+        return isKondisiRusak(kondisi) && !existingWOAssetIds.has(String(kodeAlat).trim().toUpperCase());
+    });
+
+    if (itemsRusakBelumWO.length > 0 && !notifDismissed) {
+        document.getElementById('notifTextCount').innerText =
+            `${itemsRusakBelumWO.length} alat/mesin terdeteksi rusak dan belum ada form perbaikan.`;
+        setTimeout(() => {
+            document.getElementById('notifToast').classList.add('show');
+        }, 700);
+    } else {
+        document.getElementById('notifToast').classList.remove('show');
+    }
+}
+
+function dismissNotifToast() {
+    notifDismissed = true;
+    document.getElementById('notifToast').classList.remove('show');
+}
+
+function openModalRusak() {
+    const body = document.getElementById('modalRusakBody');
+    const itemsRusak = checklistData.filter(item => isKondisiRusak(getField(item, ['Kondisi', 'Status', 'Kondisi Alat', 'Hasil Checklist'])));
+
+    body.innerHTML = itemsRusak.length ? itemsRusak.map(item => {
+        const kodeAlat = getField(item, ['Kode Alat', 'Kode alat', 'ID Alat', 'No Inventory']);
+        const namaAlat = getField(item, ['Nama Alat', 'Nama alat']);
+        const lokasi = getField(item, ['Lokasi', 'Lokasi Alat']);
+        const catatan = getField(item, ['Catatan', 'Keterangan', 'Note']) || 'Tidak ada catatan';
+        const sudahAdaWO = existingWOAssetIds.has(String(kodeAlat).trim().toUpperCase());
+
+        return `<div class="modal-item-card">
+            <div class="modal-item-info">
+                <h5>${namaAlat || '-'} <span style="color:var(--accent-red);">(${kodeAlat || '-'})</span></h5>
+                <span>📍 ${lokasi || '-'}</span>
+                <span>📝 ${catatan}</span>
+            </div>
+            ${sudahAdaWO
+                ? `<span class="btn-repair-done">✔️ WO Sudah Dibuat</span>`
+                : `<button class="btn-repair" onclick="bukaFormPerbaikan('${escapeAttr(kodeAlat)}','${escapeAttr(namaAlat)}','${escapeAttr(lokasi)}')">🔧 Buat Form Perbaikan</button>`
+            }
+        </div>`;
+    }).join('') : '<p style="text-align:center; color:var(--text-muted);">Tidak ada alat dengan kondisi rusak saat ini.</p>';
+
+    document.getElementById('modalRusakOverlay').classList.add('active');
+    dismissNotifToast();
+}
+
+function closeModalRusak() {
+    document.getElementById('modalRusakOverlay').classList.remove('active');
+}
+
+function bukaFormPerbaikan(kodeAlat, namaAlat, lokasi) {
+    const url = 'https://murindasentrabaja.github.io/Form-Perbaikan-Mesin/?id_aset=' + encodeURIComponent(kodeAlat) +
+                '&nama_aset=' + encodeURIComponent(namaAlat) +
+                '&lokasi=' + encodeURIComponent(lokasi);
+    window.open(url, '_blank');
+}
+
+document.getElementById('modalRusakOverlay').addEventListener('click', function (e) {
+    if (e.target === this) closeModalRusak();
+});
+
 setInterval(() => {
     const now = new Date();
     document.getElementById('clock').innerHTML = now.toLocaleTimeString('id-ID') + ' | ' + now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }, 1000);
 loadData();
+loadChecklistData();
 </script>
 </body>
 </html>
