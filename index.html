@@ -370,7 +370,7 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
 .checklist-head p { font-size: 12.5px; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
 .checklist-refresh-btn { --btn-accent: #c0392b; }
 
-#checklistTable { min-width: 900px; }
+#checklistTable { min-width: 1150px; }
 
 .kondisi-badge {
     padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700;
@@ -614,7 +614,7 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
         </button>
         <div class="ov-title-wrap">
             <div id="overlay-title">Sistem Produksi</div>
-            <div id="overlay-subtitle">AppSheet · MSB Production</div>
+            <div id="overlay-subtitle">MSB Production System</div>
         </div>
         <div class="ov-actions">
             <button class="ov-btn" onclick="openInNewTab()" title="Buka di tab baru">
@@ -775,7 +775,7 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
         <div class="checklist-head">
             <div>
                 <h2>🛠️ Checklist Kondisi Alat & Mesin</h2>
-                <p>Monitoring hasil checklist kelayakan alat dan mesin dari Operator"</p>
+                <p>Monitoring hasil checklist kelayakan alat dan mesin dari Operator</p>
             </div>
             <button class="btn checklist-refresh-btn" id="checklistSyncBtn" onclick="loadChecklistData(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><polyline points="21 3 21 9 15 9"></polyline></svg>
@@ -783,27 +783,16 @@ td.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.2px; }
             </button>
         </div>
 
-        <div class="cards" style="margin-bottom:22px;">
-            <div class="card glass-3d">
-                <div class="card-icon" style="background:linear-gradient(135deg, var(--accent-green), #7fe0b8);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
-                <div class="card-body"><h3>Alat Kondisi Baik</h3><h1 id="checklistBaikCount">0</h1></div>
-            </div>
-            <div class="card glass-3d">
-                <div class="card-icon" style="background:linear-gradient(135deg, var(--accent-red), #ff8a80);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
-                <div class="card-body"><h3>Alat Kondisi Rusak</h3><h1 id="checklistRusakCount">0</h1></div>
-            </div>
-        </div>
-
         <div class="table-container glass-3d">
             <div class="table-box">
                 <table id="checklistTable">
                     <thead>
                         <tr>
-                            <th>Kode Alat</th><th>Nama Alat</th><th>Lokasi</th><th>Kondisi</th>
+                            <th>Kode Alat</th><th>Nama Alat</th><th>Lokasi</th><th>Kategori</th><th>Item Checklist</th><th>Kondisi</th>
                             <th>Tanggal Checklist</th><th>Catatan</th><th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody><tr><td colspan="7" style="text-align:center; padding:30px;">Memuat data checklist...</td></tr></tbody>
+                    <tbody><tr><td colspan="9" style="text-align:center; padding:30px;">Memuat data checklist...</td></tr></tbody>
                 </table>
             </div>
             <div class="table-info-bar">
@@ -847,10 +836,14 @@ const overlayConfig = {
 };
 let currentOverlayUrl = "";
 let overlayFallbackTimer = null;
+let isRepairFormOverlay = false;
 
-function openOverlay(key) {
-    const cfg = overlayConfig[key];
-    if (!cfg) return;
+// keyOrConfig bisa berupa:
+//  - string key dari overlayConfig (mis. "appsheet", "portal"), ATAU
+//  - object config langsung { url, title, subtitle } untuk URL dinamis (mis. Form Perbaikan per alat)
+function openOverlay(keyOrConfig) {
+    const cfg = typeof keyOrConfig === 'string' ? overlayConfig[keyOrConfig] : keyOrConfig;
+    if (!cfg || !cfg.url) return;
     currentOverlayUrl = cfg.url;
 
     const container = document.getElementById('overlay-container');
@@ -887,6 +880,13 @@ function closeOverlay() {
         loader.style.opacity = '1';
         loader.style.visibility = 'visible';
     }, 550);
+
+    // Kalau yang ditutup adalah Form Perbaikan, muat ulang data checklist
+    // supaya status "WO Sudah Dibuat" langsung ter-update tanpa perlu refresh manual.
+    if (isRepairFormOverlay) {
+        isRepairFormOverlay = false;
+        loadChecklistData();
+    }
 }
 
 function openInNewTab() {
@@ -1237,49 +1237,44 @@ async function loadChecklistData(btnElement = null) {
 
 function renderChecklistTable() {
     const tbody = document.querySelector('#checklistTable tbody');
-    let baikCount = 0, rusakCount = 0;
 
-    let rows = checklistData.map(item => {
+    // Tabel checklist HANYA menampilkan item/part alat & mesin dengan kondisi RUSAK
+    const dataRusak = checklistData.filter(item =>
+        isKondisiRusak(getField(item, ['Kondisi', 'Status', 'Kondisi Alat', 'Hasil Checklist']))
+    );
+
+    const rows = dataRusak.map(item => {
         const kodeAlat = getField(item, ['Kode Alat', 'Kode alat', 'ID Alat', 'No Inventory']);
         const namaAlat = getField(item, ['Nama Alat', 'Nama alat']);
         const lokasi = getField(item, ['Lokasi', 'Lokasi Alat']);
+        const kategori = getField(item, ['Kategori', 'Kategori Alat', 'Kategori Mesin', 'Kategori Checklist', 'Category']);
+        const itemChecklist = getField(item, ['Item Checklist', 'Item checklist', 'Item', 'Nama Item', 'Item Pemeriksaan', 'Bagian', 'Part']);
         const kondisi = getField(item, ['Kondisi', 'Status', 'Kondisi Alat', 'Hasil Checklist']);
         const tanggal = getField(item, ['Tanggal', 'Timestamp', 'Tanggal Checklist']);
         const catatan = getField(item, ['Catatan', 'Keterangan', 'Note']) || '-';
-        const rusak = isKondisiRusak(kondisi);
-        if (rusak) rusakCount++; else if (kondisi) baikCount++;
 
         const sudahAdaWO = existingWOAssetIds.has(String(kodeAlat).trim().toUpperCase());
+        const aksi = sudahAdaWO
+            ? `<span class="btn-repair-done">✔️ WO Sudah Dibuat</span>`
+            : `<button class="btn-repair" onclick="bukaFormPerbaikan('${escapeAttr(kodeAlat)}','${escapeAttr(namaAlat)}','${escapeAttr(lokasi)}')">🔧 Buat Form Perbaikan</button>`;
 
-        let aksi = '-';
-        if (rusak) {
-            aksi = sudahAdaWO
-                ? `<span class="btn-repair-done">✔️ WO Sudah Dibuat</span>`
-                : `<button class="btn-repair" onclick="bukaFormPerbaikan('${escapeAttr(kodeAlat)}','${escapeAttr(namaAlat)}','${escapeAttr(lokasi)}')">🔧 Buat Form Perbaikan</button>`;
-        }
-
-        return {
-            html: `<tr class="${rusak ? 'row-rusak' : ''}">
-                <td class="mono">${kodeAlat || '-'}</td>
-                <td>${namaAlat || '-'}</td>
-                <td>${lokasi || '-'}</td>
-                <td>${kondisi ? `<span class="kondisi-badge ${rusak ? 'kondisi-rusak' : 'kondisi-baik'}">${kondisi}</span>` : '-'}</td>
-                <td>${formatDate(tanggal)}</td>
-                <td>${catatan}</td>
-                <td>${aksi}</td>
-            </tr>`,
-            sortKey: rusak ? 0 : 1
-        };
+        return `<tr class="row-rusak">
+            <td class="mono">${kodeAlat || '-'}</td>
+            <td>${namaAlat || '-'}</td>
+            <td>${lokasi || '-'}</td>
+            <td>${kategori || '-'}</td>
+            <td>${itemChecklist || '-'}</td>
+            <td>${kondisi ? `<span class="kondisi-badge kondisi-rusak">${kondisi}</span>` : '-'}</td>
+            <td>${formatDate(tanggal)}</td>
+            <td>${catatan}</td>
+            <td>${aksi}</td>
+        </tr>`;
     });
 
-    rows.sort((a, b) => a.sortKey - b.sortKey);
+    tbody.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">🎉 Tidak ada alat/mesin dengan kondisi rusak saat ini.</td></tr>';
 
-    tbody.innerHTML = rows.length ? rows.map(r => r.html).join('') : '<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">Belum ada data checklist.</td></tr>';
-
-    animateValue('checklistBaikCount', baikCount);
-    animateValue('checklistRusakCount', rusakCount);
-    updateSidebarBadge(rusakCount);
-    document.getElementById('checklistFilterCounter').innerHTML = `Total <strong style="color:var(--accent-blue)">${checklistData.length}</strong> data checklist dimuat.`;
+    updateSidebarBadge(dataRusak.length);
+    document.getElementById('checklistFilterCounter').innerHTML = `Menampilkan <strong style="color:var(--accent-red)">${dataRusak.length}</strong> item checklist kondisi rusak, dari total <strong style="color:var(--accent-blue)">${checklistData.length}</strong> data checklist.`;
 }
 
 function evaluateRusakNotification() {
@@ -1313,6 +1308,8 @@ function openModalRusak() {
         const kodeAlat = getField(item, ['Kode Alat', 'Kode alat', 'ID Alat', 'No Inventory']);
         const namaAlat = getField(item, ['Nama Alat', 'Nama alat']);
         const lokasi = getField(item, ['Lokasi', 'Lokasi Alat']);
+        const kategori = getField(item, ['Kategori', 'Kategori Alat', 'Kategori Mesin', 'Kategori Checklist', 'Category']);
+        const itemChecklist = getField(item, ['Item Checklist', 'Item checklist', 'Item', 'Nama Item', 'Item Pemeriksaan', 'Bagian', 'Part']);
         const catatan = getField(item, ['Catatan', 'Keterangan', 'Note']) || 'Tidak ada catatan';
         const sudahAdaWO = existingWOAssetIds.has(String(kodeAlat).trim().toUpperCase());
 
@@ -1320,6 +1317,7 @@ function openModalRusak() {
             <div class="modal-item-info">
                 <h5>${namaAlat || '-'} <span style="color:var(--accent-red);">(${kodeAlat || '-'})</span></h5>
                 <span>📍 ${lokasi || '-'}</span>
+                ${itemChecklist ? `<span>🔧 ${kategori ? kategori + ' — ' : ''}${itemChecklist}</span>` : ''}
                 <span>📝 ${catatan}</span>
             </div>
             ${sudahAdaWO
@@ -1341,7 +1339,15 @@ function bukaFormPerbaikan(kodeAlat, namaAlat, lokasi) {
     const url = 'https://murindasentrabaja.github.io/Form-Perbaikan-Mesin/?id_aset=' + encodeURIComponent(kodeAlat) +
                 '&nama_aset=' + encodeURIComponent(namaAlat) +
                 '&lokasi=' + encodeURIComponent(lokasi);
-    window.open(url, '_blank');
+
+    closeModalRusak(); // tutup modal daftar rusak dulu (kalau lagi terbuka) sebelum buka overlay form
+
+    isRepairFormOverlay = true;
+    openOverlay({
+        url: url,
+        title: '🔧 Form Perbaikan Mesin',
+        subtitle: (namaAlat || '-') + ' · ' + (kodeAlat || '-')
+    });
 }
 
 document.getElementById('modalRusakOverlay').addEventListener('click', function (e) {
