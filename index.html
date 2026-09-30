@@ -220,12 +220,29 @@ th,td{padding-left:11px;padding-right:11px}td.ac{padding:6px 8px}td.ac div{gap:4
 .tw tbody{transition:opacity .25s,filter .25s}.tw.ld2 tbody{opacity:.45;filter:blur(.6px)}
 @keyframes rin{from{opacity:0;transform:translateY(8px)}}
 tbody.fx tr{animation:rin .42s cubic-bezier(.22,1,.36,1) both}
-tbody tr.rw{cursor:pointer;-webkit-tap-highlight-color:rgba(13,71,161,.12)}
-tbody tr.rw:active td{background:rgba(13,71,161,.09)}
-tbody tr.rw:focus-visible{outline:2px solid #5b93e8;outline-offset:-2px}
+tbody tr.rk{cursor:pointer;-webkit-tap-highlight-color:rgba(13,71,161,.12)}
+tbody tr.rk:active td{background:rgba(13,71,161,.09)}
+tbody tr.rk:focus-visible{outline:2px solid #5b93e8;outline-offset:-2px}
 .dh{margin:-6px 0 12px;font-size:12.5px;color:var(--mu)}
 .fa .dl{margin-right:auto}
 @media(prefers-reduced-motion:reduce){.b.busy .ri,.pbar::after{animation-duration:2.4s}tbody.fx tr{animation:none}}
+/* tabel bersih: hanya garis tabel, tanpa hiasan */
+.tw{background:rgba(255,255,255,.8)}
+.tw::before,.tw:hover::before{display:none}
+table{border-collapse:separate;border-spacing:0}
+th,td{border:0;border-right:1px solid #dde6f2;border-bottom:1px solid #dde6f2}
+th{border-bottom-color:#c5d5ec;border-right-color:#d0dcee}
+th:last-child,td:last-child{border-right:0}
+tbody tr:hover{box-shadow:none}
+th.ac,td.ac{box-shadow:none;border-left:1px solid #c5d5ec}
+@keyframes rfd{from{opacity:0}}
+tbody.fx tr{animation-name:rfd}
+/* kolom beku */
+th.fz,td.fz{position:sticky}
+td.fz{z-index:1;background:#f7faff}
+th.fz{z-index:5}
+.fl{border-right:1px solid #b9cbe6!important;box-shadow:6px 0 8px -6px rgba(10,37,64,.22)}
+tbody tr:hover td.fz{background:#eaf1fb}
 @media print{@page{size:landscape;margin:10mm}body{height:auto;overflow:visible;background:#fff}body>*:not(#rpt){display:none!important}#rpt{display:block}#rpt .rh{display:flex;align-items:center;gap:20px;border-bottom:3px solid #0d47a1;padding-bottom:8px;margin-bottom:10px}#rpt img{width:170px}#rpt h2{color:#0d47a1}#rpt p{font-size:11px}#rpt table{font-size:8px}#rpt th{position:static;background:#0d47a1!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;border:1px solid #999;padding:3px 5px;white-space:normal}#rpt td{border:1px solid #bbb;padding:3px 5px;white-space:normal;max-width:none}.sg{display:flex;gap:60px;margin-top:30px;page-break-inside:avoid}.sg div{width:200px;font-size:11px}.sg i{display:block;border-bottom:1px solid #000;height:60px}}
 </style></head><body>
 <div id="amb" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -326,16 +343,29 @@ try{const j=await pull(id,true);await new Promise(r=>setTimeout(r,Math.max(0,650
 b.classList.remove('busy');w&&w.classList.remove('ld2');p&&p.classList.remove('on');l&&(l.textContent='Muat ulang')}
 async function after(){Object.values(CH).forEach(c=>c.t=0);const id=S.id;upd(id,await pull(id,true));rowFx()}
 function draw(){const c=S.t==='c'&&!U.g;$('#main').innerHTML=`<div class="tb"><div class="sr">🔎<input id="q" placeholder="Cari data…" value="${esc(S.q)}"></div><span class="cn" id="cn"></span><div class="bt">${c?'<button class="b g rp" onclick="frm(0)">➕ Tambah</button>':''}<button class="b rp" onclick="rf(this)"><svg class="ri" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg><span class="rl">Muat ulang</span></button><button class="b x rp" onclick="ex(\'x\')">📗 Excel</button><button class="b p rp" onclick="ex(\'p\')">📕 PDF</button><button class="b y rp" onclick="ex(\'r\')">🖨️ Cetak</button></div></div><div class="pbar" id="pb"></div><div class="tw cd"><table><thead></thead><tbody></tbody></table></div><div class="pg" id="pg"></div>`;$('#q').oninput=e=>{S.q=e.target.value;S.p=0;body()};body()}
-function view(){let r=S.rows;const q=S.q.toLowerCase();if(q)r=r.filter(x=>x.v.some(y=>String(y).toLowerCase().includes(q)));if(S.so>=0){const i=S.so;r=[...r].sort((a,b)=>{const x=a.v[i],y=b.v[i];return(typeof x=='number'&&typeof y=='number'?x-y:String(x).localeCompare(String(y),'id',{numeric:true}))*S.d})}return r}
+/* format tanggal DD-MMM-YY (jam hanya pada rentang kolom TM) + kolom beku (FZ) */
+const MON=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],DRE=/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?$/,
+TM={Tracking_Produksi:['web','deliver']},FZ={Tracking_Produksi:'kodeserial'};let RZ=0;
+function tmR(){const k=TM[S.id];if(!k||!S.h)return null;const H=S.h.map(h=>String(h).toLowerCase()),a=H.findIndex(h=>h.includes(k[0]));let b=-1;H.forEach((h,i)=>{if(h.includes(k[1]))b=i});return a>=0&&b>=a?[a,b]:null}
+const tmI=i=>!!(S.tm&&i>=S.tm[0]&&i<=S.tm[1]);
+function fdt(v,tm){if(typeof v!=='string')return v;const m=DRE.exec(v);if(!m)return v;let s=m[3]+'-'+MON[+m[2]-1]+'-'+m[1].slice(2);if(tm&&m[4]!==undefined&&(m[4]!=='00'||m[5]!=='00'))s+=' '+m[4]+':'+m[5];return s}
+function fzN(){const k=FZ[S.id];if(!k||!S.h)return 0;const i=S.h.findIndex(h=>String(h).toLowerCase().replace(/[^a-z0-9]/g,'')===k);return i<0?0:i+2}
+function fz(){const t=document.querySelector('.tw table');if(!t)return;t.querySelectorAll('.fz').forEach(e=>{e.classList.remove('fz','fl');e.style.left=''});const n=S.fz||0;if(!n||!t.tHead)return;
+const hs=t.tHead.rows[0].cells,cap=t.parentElement.clientWidth*.55,L=[];let x=0;
+for(let k=0;k<n&&k<hs.length;k++){const w=hs[k].offsetWidth;if(k>=2&&x+w>cap)break;L.push(x);x+=w}
+if(!L.length)return;
+t.querySelectorAll('tr').forEach(r=>{if(r.cells.length<L.length)return;L.forEach((l,i)=>{const c=r.cells[i];c.classList.add('fz');if(i===L.length-1)c.classList.add('fl');c.style.left=l+'px'})})}
+addEventListener('resize',()=>{clearTimeout(RZ);RZ=setTimeout(fz,150)});
+function view(){S.tm=tmR();S.fz=fzN();let r=S.rows;const q=S.q.toLowerCase();if(q)r=r.filter(x=>x.v.some((y,i)=>String(y).toLowerCase().includes(q)||String(fdt(y,tmI(i))).toLowerCase().includes(q)));if(S.so>=0){const i=S.so;r=[...r].sort((a,b)=>{const x=a.v[i],y=b.v[i];return(typeof x=='number'&&typeof y=='number'?x-y:String(x).localeCompare(String(y),'id',{numeric:true}))*S.d})}return r}
 function st(i){S.d=S.so===i?-S.d:1;S.so=i;body()}
 function body(){const r=view(),n=25,pc=Math.max(1,Math.ceil(r.length/n));S.p=Math.min(S.p,pc-1);const pr=r.slice(S.p*n,S.p*n+n),ed=S.t!=='v'&&!U.g;$('#cn').textContent=r.length.toLocaleString('id-ID')+' data';
 $('thead').innerHTML='<tr><th>No</th>'+S.h.map((h,i)=>`<th onclick="st(${i})">${esc(pretty(h))}${S.so===i?(S.d>0?' ▲':' ▼'):''}</th>`).join('')+(ed?'<th class="ac">Aksi</th>':'')+'</tr>';
-$('tbody').innerHTML=pr.length?pr.map((x,k)=>`<tr class="rw" tabindex="0" onclick="rowc(event,${x.r})" onkeydown="if(event.key==='Enter'&&event.target===this)rowc(event,${x.r})"><td>${S.p*n+k+1}</td>${x.v.map((v,i)=>`<td>${cell(S.h[i],v)}</td>`).join('')}${ed?`<td class="ac"><div><button class="i rp" title="Detail &amp; ubah" onclick="event.stopPropagation();frm(${x.r})">✏️</button>${S.t==='c'?`<button class="i rp" title="Hapus" onclick="event.stopPropagation();dl(${x.r})">🗑️</button>`:''}</div></td>`:''}</tr>`).join(''):'<tr><td colspan="99" class="em">📭 Belum ada data</td></tr>';
-$('#pg').innerHTML=`<button class="b rp" ${S.p?'':'disabled'} onclick="S.p--;body()">‹ Sebelumnya</button><span>Halaman ${S.p+1} / ${pc}</span><button class="b rp" ${S.p<pc-1?'':'disabled'} onclick="S.p++;body()">Berikutnya ›</button>`}
+$('tbody').innerHTML=pr.length?pr.map((x,k)=>`<tr class="rk" tabindex="0" onclick="rowc(event,${x.r})" onkeydown="if(event.key==='Enter'&&event.target===this)rowc(event,${x.r})"><td>${S.p*n+k+1}</td>${x.v.map((v,i)=>`<td>${cell(S.h[i],fdt(v,tmI(i)))}</td>`).join('')}${ed?`<td class="ac"><div><button class="i rp" title="Detail &amp; ubah" onclick="event.stopPropagation();frm(${x.r})">✏️</button>${S.t==='c'?`<button class="i rp" title="Hapus" onclick="event.stopPropagation();dl(${x.r})">🗑️</button>`:''}</div></td>`:''}</tr>`).join(''):'<tr><td colspan="99" class="em">📭 Belum ada data</td></tr>';
+$('#pg').innerHTML=`<button class="b rp" ${S.p?'':'disabled'} onclick="S.p--;body()">‹ Sebelumnya</button><span>Halaman ${S.p+1} / ${pc}</span><button class="b rp" ${S.p<pc-1?'':'disabled'} onclick="S.p++;body()">Berikutnya ›</button>`;fz()}
 /* form */
 function fld(h,i,v,ro,add,nb){const L=MT&&MT[LK[h]],a=`data-h="${esc(h)}" ${ro?'disabled':''}`;let x;
 if(L&&!ro){const o=L.map(y=>Array.isArray(y)?[String(y[0]),y[1]]:[String(y),'']),s=String(v);if(s&&!o.some(y=>y[0]===s))o.unshift([s,'']);x=`<select ${a}><option value="">— Pilih ${HN[h]||esc(pretty(h)).toLowerCase()} —</option>${o.map(y=>`<option value="${esc(y[0])}" ${y[0]===s?'selected':''}>${esc(y[0]+(y[1]?' — '+y[1]:''))}</option>`).join('')}</select>`}
-else if(/^(Tgl|Tanggal)/.test(h))x=`<input type="date" ${a} value="${String(v).slice(0,10)}">`;
+else if(/^(Tgl|Tanggal)/.test(h))x=/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(String(v))?`<input type="datetime-local" ${a} value="${String(v).slice(0,16).replace(' ','T')}">`:`<input type="date" ${a} value="${String(v).slice(0,10)}">`;
 else if(/^Jam_(Masuk|Keluar|Mulai|Selesai)$/.test(h))x=`<input type="time" ${a} value="${v}">`;
 else if(/Keterangan|Catatan|Remark|Deskripsi|Tindakan|Alamat/.test(h))x=`<textarea ${a}>${esc(v)}</textarea>`;
 else x=`<input ${/^(Qty|Urutan|Standar|Berat|Durasi)/.test(h)?'type="number" step="any"':''} ${a} value="${esc(v)}" ${add&&S.pre&&i===0?'placeholder="Otomatis"':''}>`;
@@ -346,11 +376,11 @@ function frm(r){const row=r?S.rows.find(x=>x.r===r):null,can=S.t!=='v'&&!U.g,
 fs=S.h.map((h,i)=>{const ed=can&&!S.calc[i]&&i+1>=S.from&&!(S.t==='c'&&i===0&&(row||S.pre));return!row&&!ed?'':fld(h,i,row?row.v[i]:'',!ed,!row,!can)}).join('');
 mo(`<h3>${row?'Detail':'Tambah'} ${esc(FLAT[S.id][0])}</h3>${row&&can?'<p class="dh">Ubah langsung isian di bawah, lalu tekan Simpan.</p>':''}<div class="fg">${fs}</div><div class="fa">${row&&can&&S.t==='c'?`<button class="b p rp dl" onclick="dl(${r})">🗑️ Hapus</button>`:''}<button class="b rp" onclick="cl()">${can?'Batal':'Tutup'}</button>${can?`<button class="b g rp" id="svb" ${row?'disabled':''} onclick="sv(${r||0})">💾 Simpan</button>`:''}</div>`,'dm');
 if(row&&can){const m=document.querySelector('#mo .mc'),b=$('#svb'),f=()=>{b.disabled=false};m.addEventListener('input',f);m.addEventListener('change',f)}}
-async function sv(r){const d={};document.querySelectorAll('#mo [data-h]:not([disabled])').forEach(e=>d[e.dataset.h]=e.value);ld(1,'Menyimpan data');try{await api('save',{s:S.id,r,d});cl();toast('Data berhasil disimpan');await after()}catch(e){toast(e.message,1)}ld(0)}
+async function sv(r){const d={};document.querySelectorAll('#mo [data-h]:not([disabled])').forEach(e=>d[e.dataset.h]=e.type==='datetime-local'?e.value.replace('T',' '):e.value);ld(1,'Menyimpan data');try{await api('save',{s:S.id,r,d});cl();toast('Data berhasil disimpan');await after()}catch(e){toast(e.message,1)}ld(0)}
 const dl=r=>mo(`<h3>🗑️ Hapus data?</h3><p>Data yang dihapus tidak dapat dikembalikan.</p><div class="fa"><button class="b rp" onclick="cl()">Batal</button><button class="b p rp" onclick="dd(${r})">Ya, hapus</button></div>`);
 async function dd(r){cl();ld(1,'Menghapus data');try{await api('del',{s:S.id,r});toast('Data berhasil dihapus');await after()}catch(e){toast(e.message,1)}ld(0)}
 /* laporan: excel, pdf, cetak */
-function ex(k){const r=view(),H=S.h,tt=FLAT[S.id][0],now=new Date().toLocaleString('id-ID'),by=U.n||U.u,R=r.map(x=>x.v.map(v=>v===''?'':v)),sg=['Dibuat oleh','Diperiksa oleh','Disetujui oleh'];
+function ex(k){const r=view(),H=S.h,tt=FLAT[S.id][0],now=new Date().toLocaleString('id-ID'),by=U.n||U.u,R=r.map(x=>x.v.map((v,i)=>v===''?'':fdt(v,tmI(i)))),sg=['Dibuat oleh','Diperiksa oleh','Disetujui oleh'];
 if(!R.length)return toast('Tidak ada data untuk diekspor',1);
 if(k==='x'){const w=XLSX.utils.aoa_to_sheet([[CO],['LAPORAN '+tt.toUpperCase()],['Dicetak: '+now+'  |  Oleh: '+by],[],H.map(pretty),...R,[],sg]);w['!cols']=H.map((h,i)=>({wch:Math.min(40,Math.max(String(h).length,...R.slice(0,80).map(x=>String(x[i]).length))+2)}));const b=XLSX.utils.book_new();XLSX.utils.book_append_sheet(b,w,tt.replace(/[\\\/?*\[\]:]/g,'').slice(0,31));XLSX.writeFile(b,'Laporan_'+S.id+'.xlsx')}
 else if(k==='p'){const d=new jspdf.jsPDF({orientation:'l',unit:'mm',format:H.length>14?'a3':'a4'}),W=d.internal.pageSize.getWidth(),ph=d.internal.pageSize.getHeight();
