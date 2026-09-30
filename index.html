@@ -210,6 +210,22 @@ th,td{padding-left:11px;padding-right:11px}td.ac{padding:6px 8px}td.ac div{gap:4
 }
 @media(max-width:360px){.kg{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+/* refresh & detail baris */
+.b .ri{width:16px;height:16px;flex:none;display:inline-block}
+.b.busy{pointer-events:none}.b.busy .ri{animation:sp .75s linear infinite}
+.pbar{height:3px;margin:-2px 6px 10px;border-radius:3px;overflow:hidden;position:relative;opacity:0;transition:opacity .25s}
+.pbar.on{opacity:1}
+.pbar::after{content:"";position:absolute;top:0;bottom:0;left:0;width:38%;border-radius:3px;background:linear-gradient(90deg,transparent,#2f80ed,#7db4ff,transparent);animation:pbar 1s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes pbar{from{transform:translateX(-110%)}to{transform:translateX(280%)}}
+.tw tbody{transition:opacity .25s,filter .25s}.tw.ld2 tbody{opacity:.45;filter:blur(.6px)}
+@keyframes rin{from{opacity:0;transform:translateY(8px)}}
+tbody.fx tr{animation:rin .42s cubic-bezier(.22,1,.36,1) both}
+tbody tr.rw{cursor:pointer;-webkit-tap-highlight-color:rgba(13,71,161,.12)}
+tbody tr.rw:active td{background:rgba(13,71,161,.09)}
+tbody tr.rw:focus-visible{outline:2px solid #5b93e8;outline-offset:-2px}
+.dh{margin:-6px 0 12px;font-size:12.5px;color:var(--mu)}
+.fa .dl{margin-right:auto}
+@media(prefers-reduced-motion:reduce){.b.busy .ri,.pbar::after{animation-duration:2.4s}tbody.fx tr{animation:none}}
 @media print{@page{size:landscape;margin:10mm}body{height:auto;overflow:visible;background:#fff}body>*:not(#rpt){display:none!important}#rpt{display:block}#rpt .rh{display:flex;align-items:center;gap:20px;border-bottom:3px solid #0d47a1;padding-bottom:8px;margin-bottom:10px}#rpt img{width:170px}#rpt h2{color:#0d47a1}#rpt p{font-size:11px}#rpt table{font-size:8px}#rpt th{position:static;background:#0d47a1!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;border:1px solid #999;padding:3px 5px;white-space:normal}#rpt td{border:1px solid #bbb;padding:3px 5px;white-space:normal;max-width:none}.sg{display:flex;gap:60px;margin-top:30px;page-break-inside:avoid}.sg div{width:200px;font-size:11px}.sg i{display:block;border-bottom:1px solid #000;height:60px}}
 </style></head><body>
 <div id="amb" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -304,25 +320,32 @@ const bc=v=>/^ng$|tolak|breakdown|tinggi|keluar|nonaktif|reject|gagal|kadaluarsa
 function cell(h,v){if(v==='')return'<span class="mt">–</span>';if(/^(Status|Hasil|Prioritas|Kategori_Downtime|Jenis_Transaksi|QC)/.test(h))return`<span class="bd ${bc(String(v))}">${esc(v)}</span>`;if(typeof v==='number'){if(/^Persentase/.test(h))return(v*100).toFixed(1)+'%';if(/Qty|Berat|Durasi|Total|Stock|Stok|Weight|Min|Max|Reorder|Sisa|SPP|Bon/.test(h))return v.toLocaleString('id-ID')}return esc(v)}
 const tblR=(id,j)=>{S={id,h:j.h,rows:j.rows,calc:j.calc,t:j.cfg.t,from:j.cfg.from,pre:j.cfg.pre,q:'',so:-1,d:1,p:0};draw()};
 function upd(id,j){if(S.id!==id)return;Object.assign(S,{h:j.h,rows:j.rows,calc:j.calc,t:j.cfg.t,from:j.cfg.from,pre:j.cfg.pre});body()}
-async function rf(b){const id=S.id;b.classList.add('busy');try{upd(id,await pull(id,true));toast('Data diperbarui')}catch(e){toast(e.message,1)}b.classList.remove('busy')}
-async function after(){Object.values(CH).forEach(c=>c.t=0);const id=S.id;upd(id,await pull(id,true))}
-function draw(){const c=S.t==='c'&&!U.g;$('#main').innerHTML=`<div class="tb"><div class="sr">🔎<input id="q" placeholder="Cari data…" value="${esc(S.q)}"></div><span class="cn" id="cn"></span><div class="bt">${c?'<button class="b g rp" onclick="frm(0)">➕ Tambah</button>':''}<button class="b rp" onclick="rf(this)"><span class="ri">🔄</span> Muat ulang</button><button class="b x rp" onclick="ex(\'x\')">📗 Excel</button><button class="b p rp" onclick="ex(\'p\')">📕 PDF</button><button class="b y rp" onclick="ex(\'r\')">🖨️ Cetak</button></div></div><div class="tw cd"><table><thead></thead><tbody></tbody></table></div><div class="pg" id="pg"></div>`;$('#q').oninput=e=>{S.q=e.target.value;S.p=0;body()};body()}
+function rowFx(){const t=document.querySelector('tbody');if(!t)return;t.classList.remove('fx');[...t.rows].slice(0,14).forEach((r,i)=>r.style.animationDelay=i*24+'ms');void t.offsetWidth;t.classList.add('fx');setTimeout(()=>t.classList.remove('fx'),1000)}
+async function rf(b){const id=S.id,w=document.querySelector('.tw'),p=$('#pb'),l=b.querySelector('.rl'),t0=Date.now();b.classList.add('busy');w&&w.classList.add('ld2');p&&p.classList.add('on');l&&(l.textContent='Memuat…');
+try{const j=await pull(id,true);await new Promise(r=>setTimeout(r,Math.max(0,650-(Date.now()-t0))));upd(id,j);rowFx();toast('Data diperbarui')}catch(e){toast(e.message,1)}
+b.classList.remove('busy');w&&w.classList.remove('ld2');p&&p.classList.remove('on');l&&(l.textContent='Muat ulang')}
+async function after(){Object.values(CH).forEach(c=>c.t=0);const id=S.id;upd(id,await pull(id,true));rowFx()}
+function draw(){const c=S.t==='c'&&!U.g;$('#main').innerHTML=`<div class="tb"><div class="sr">🔎<input id="q" placeholder="Cari data…" value="${esc(S.q)}"></div><span class="cn" id="cn"></span><div class="bt">${c?'<button class="b g rp" onclick="frm(0)">➕ Tambah</button>':''}<button class="b rp" onclick="rf(this)"><svg class="ri" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg><span class="rl">Muat ulang</span></button><button class="b x rp" onclick="ex(\'x\')">📗 Excel</button><button class="b p rp" onclick="ex(\'p\')">📕 PDF</button><button class="b y rp" onclick="ex(\'r\')">🖨️ Cetak</button></div></div><div class="pbar" id="pb"></div><div class="tw cd"><table><thead></thead><tbody></tbody></table></div><div class="pg" id="pg"></div>`;$('#q').oninput=e=>{S.q=e.target.value;S.p=0;body()};body()}
 function view(){let r=S.rows;const q=S.q.toLowerCase();if(q)r=r.filter(x=>x.v.some(y=>String(y).toLowerCase().includes(q)));if(S.so>=0){const i=S.so;r=[...r].sort((a,b)=>{const x=a.v[i],y=b.v[i];return(typeof x=='number'&&typeof y=='number'?x-y:String(x).localeCompare(String(y),'id',{numeric:true}))*S.d})}return r}
 function st(i){S.d=S.so===i?-S.d:1;S.so=i;body()}
 function body(){const r=view(),n=25,pc=Math.max(1,Math.ceil(r.length/n));S.p=Math.min(S.p,pc-1);const pr=r.slice(S.p*n,S.p*n+n),ed=S.t!=='v'&&!U.g;$('#cn').textContent=r.length.toLocaleString('id-ID')+' data';
 $('thead').innerHTML='<tr><th>No</th>'+S.h.map((h,i)=>`<th onclick="st(${i})">${esc(pretty(h))}${S.so===i?(S.d>0?' ▲':' ▼'):''}</th>`).join('')+(ed?'<th class="ac">Aksi</th>':'')+'</tr>';
-$('tbody').innerHTML=pr.length?pr.map((x,k)=>`<tr><td>${S.p*n+k+1}</td>${x.v.map((v,i)=>`<td>${cell(S.h[i],v)}</td>`).join('')}${ed?`<td class="ac"><div><button class="i rp" title="Ubah" onclick="frm(${x.r})">✏️</button>${S.t==='c'?`<button class="i rp" title="Hapus" onclick="dl(${x.r})">🗑️</button>`:''}</div></td>`:''}</tr>`).join(''):'<tr><td colspan="99" class="em">📭 Belum ada data</td></tr>';
+$('tbody').innerHTML=pr.length?pr.map((x,k)=>`<tr class="rw" tabindex="0" onclick="rowc(event,${x.r})" onkeydown="if(event.key==='Enter'&&event.target===this)rowc(event,${x.r})"><td>${S.p*n+k+1}</td>${x.v.map((v,i)=>`<td>${cell(S.h[i],v)}</td>`).join('')}${ed?`<td class="ac"><div><button class="i rp" title="Detail &amp; ubah" onclick="event.stopPropagation();frm(${x.r})">✏️</button>${S.t==='c'?`<button class="i rp" title="Hapus" onclick="event.stopPropagation();dl(${x.r})">🗑️</button>`:''}</div></td>`:''}</tr>`).join(''):'<tr><td colspan="99" class="em">📭 Belum ada data</td></tr>';
 $('#pg').innerHTML=`<button class="b rp" ${S.p?'':'disabled'} onclick="S.p--;body()">‹ Sebelumnya</button><span>Halaman ${S.p+1} / ${pc}</span><button class="b rp" ${S.p<pc-1?'':'disabled'} onclick="S.p++;body()">Berikutnya ›</button>`}
 /* form */
-function fld(h,i,v,ro,add){const L=MT&&MT[LK[h]],a=`data-h="${esc(h)}" ${ro?'disabled':''}`;let x;
+function fld(h,i,v,ro,add,nb){const L=MT&&MT[LK[h]],a=`data-h="${esc(h)}" ${ro?'disabled':''}`;let x;
 if(L&&!ro){const o=L.map(y=>Array.isArray(y)?[String(y[0]),y[1]]:[String(y),'']),s=String(v);if(s&&!o.some(y=>y[0]===s))o.unshift([s,'']);x=`<select ${a}><option value="">— Pilih ${HN[h]||esc(pretty(h)).toLowerCase()} —</option>${o.map(y=>`<option value="${esc(y[0])}" ${y[0]===s?'selected':''}>${esc(y[0]+(y[1]?' — '+y[1]:''))}</option>`).join('')}</select>`}
 else if(/^(Tgl|Tanggal)/.test(h))x=`<input type="date" ${a} value="${String(v).slice(0,10)}">`;
 else if(/^Jam_(Masuk|Keluar|Mulai|Selesai)$/.test(h))x=`<input type="time" ${a} value="${v}">`;
 else if(/Keterangan|Catatan|Remark|Deskripsi|Tindakan|Alamat/.test(h))x=`<textarea ${a}>${esc(v)}</textarea>`;
 else x=`<input ${/^(Qty|Urutan|Standar|Berat|Durasi)/.test(h)?'type="number" step="any"':''} ${a} value="${esc(v)}" ${add&&S.pre&&i===0?'placeholder="Otomatis"':''}>`;
-return`<label class="${/Keterangan|Catatan|Remark|Deskripsi|Tindakan|Alamat/.test(h)?'w':''}">${esc(pretty(h))}${ro?KO:(L&&HN[h]?`<span class="hn">pilih ${HN[h]}</span>`:'')}${x}</label>`}
-function frm(r){const row=r?S.rows.find(x=>x.r===r):null,fs=S.h.map((h,i)=>{const ed=!S.calc[i]&&i+1>=S.from&&!(S.t==='c'&&i===0&&(row||S.pre));return!row&&!ed?'':fld(h,i,row?row.v[i]:'',!ed,!row)}).join('');
-mo(`<h3>${row?'Ubah':'Tambah'} ${esc(FLAT[S.id][0])}</h3><div class="fg">${fs}</div><div class="fa"><button class="b rp" onclick="cl()">Batal</button><button class="b g rp" onclick="sv(${r||0})">💾 Simpan</button></div>`)}
+return`<label class="${/Keterangan|Catatan|Remark|Deskripsi|Tindakan|Alamat/.test(h)?'w':''}">${esc(pretty(h))}${ro?(nb?'':KO):(L&&HN[h]?`<span class="hn">pilih ${HN[h]}</span>`:'')}${x}</label>`}
+function rowc(e,r){if(e.target.closest&&e.target.closest('button,a,input,select,textarea'))return;const g=window.getSelection&&getSelection();if(e.type==='click'&&g&&String(g).length)return;frm(r)}
+/* detail data: klik baris -> semua kolom tampil; isian yang boleh diubah bisa langsung diedit, tombol Simpan aktif setelah ada perubahan */
+function frm(r){const row=r?S.rows.find(x=>x.r===r):null,can=S.t!=='v'&&!U.g,
+fs=S.h.map((h,i)=>{const ed=can&&!S.calc[i]&&i+1>=S.from&&!(S.t==='c'&&i===0&&(row||S.pre));return!row&&!ed?'':fld(h,i,row?row.v[i]:'',!ed,!row,!can)}).join('');
+mo(`<h3>${row?'Detail':'Tambah'} ${esc(FLAT[S.id][0])}</h3>${row&&can?'<p class="dh">Ubah langsung isian di bawah, lalu tekan Simpan.</p>':''}<div class="fg">${fs}</div><div class="fa">${row&&can&&S.t==='c'?`<button class="b p rp dl" onclick="dl(${r})">🗑️ Hapus</button>`:''}<button class="b rp" onclick="cl()">${can?'Batal':'Tutup'}</button>${can?`<button class="b g rp" id="svb" ${row?'disabled':''} onclick="sv(${r||0})">💾 Simpan</button>`:''}</div>`,'dm');
+if(row&&can){const m=document.querySelector('#mo .mc'),b=$('#svb'),f=()=>{b.disabled=false};m.addEventListener('input',f);m.addEventListener('change',f)}}
 async function sv(r){const d={};document.querySelectorAll('#mo [data-h]:not([disabled])').forEach(e=>d[e.dataset.h]=e.value);ld(1,'Menyimpan data');try{await api('save',{s:S.id,r,d});cl();toast('Data berhasil disimpan');await after()}catch(e){toast(e.message,1)}ld(0)}
 const dl=r=>mo(`<h3>🗑️ Hapus data?</h3><p>Data yang dihapus tidak dapat dikembalikan.</p><div class="fa"><button class="b rp" onclick="cl()">Batal</button><button class="b p rp" onclick="dd(${r})">Ya, hapus</button></div>`);
 async function dd(r){cl();ld(1,'Menghapus data');try{await api('del',{s:S.id,r});toast('Data berhasil dihapus');await after()}catch(e){toast(e.message,1)}ld(0)}
